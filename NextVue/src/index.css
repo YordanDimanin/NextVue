@@ -9,4 +9,11 @@
 
 body {
   font-family: "Poppins", sans-serif;
+  background-color: var(--color-primary-black);
+  color: var(--color-primary-white)
+}
+
+/* styles.css */
+.nav-item {
+  @apply text-primary-white hover:text-primary-green text-2xl;
 }
