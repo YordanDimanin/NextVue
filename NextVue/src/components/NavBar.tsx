@@ -9,23 +9,23 @@ const NavBar: React.FC = () => {
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
   return (
-    <div className="relative">
+    <>
       <button
         onClick={toggleMenu}
-        className="text-5xl border-routed absolute top-4 right-4"
+        className="text-5xl border-routed fixed top-4 right-4 transition transform hover:scale-105 hover:shadow-lg duration-300 z-20"
       >
         {isOpen ? <IoClose /> : <HiMenuAlt1 />}
       </button> 
 
       {isOpen && (
-      <div className="">
-          <ul className="flex flex-col gap-6 bg-primary-light-gray text-center justify-center h-screen ">
-            <li><a href="#" className="nav-item">Home</a></li>
-            <li><a href="#" className="nav-item">Filter</a></li>
+      <div className="fixed inset-0 z-10">
+          <ul className="flex flex-col gap-6 bg-primary-light-gray text-center justify-center h-screen">
+            <li className=" nav-item">Home</li>
+            <li className="nav-item">Filter</li>
           </ul>
       </div>
       )}
-    </div>
+    </>
   );
 };
 
