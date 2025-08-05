@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { HiMenuAlt1 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,8 +21,11 @@ const NavBar: React.FC = () => {
       {isOpen && (
       <div className="fixed inset-0 z-10">
           <ul className="flex flex-col gap-6 bg-primary-light-gray text-center justify-center h-screen">
-            <li className=" nav-item">Home</li>
-            <li className="nav-item">Filter</li>
+
+            <Link to="/"><li className="nav-item">Home</li></Link>
+
+            <Link to="/filter"><li className="nav-item">Filter</li></Link>
+
           </ul>
       </div>
       )}
