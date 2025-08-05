@@ -9,4 +9,11 @@
 
 body {
   font-family: "Poppins", sans-serif;
+  background-color: var(--color-primary-light-gray);
+  color: var(--color-slate-100)
+}
+
+/* styles.css */
+.nav-item {
+  @apply text-primary-white hover:text-lime-400 text-2xl cursor-pointer font-bold py-2 px-6 rounded-lg transition transform hover:scale-125 duration-300;
 }

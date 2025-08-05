@@ -1,0 +1,32 @@
+
+import React, { useState } from "react";
+import { HiMenuAlt1 } from "react-icons/hi";
+import { IoClose } from "react-icons/io5";
+
+const NavBar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => setIsOpen((prev) => !prev);
+
+  return (
+    <>
+      <button
+        onClick={toggleMenu}
+        className="text-5xl border-routed fixed top-4 right-4 transition transform hover:scale-105 hover:shadow-lg duration-300 z-20"
+      >
+        {isOpen ? <IoClose /> : <HiMenuAlt1 />}
+      </button> 
+
+      {isOpen && (
+      <div className="fixed inset-0 z-10">
+          <ul className="flex flex-col gap-6 bg-primary-light-gray text-center justify-center h-screen">
+            <li className=" nav-item">Home</li>
+            <li className="nav-item">Filter</li>
+          </ul>
+      </div>
+      )}
+    </>
+  );
+};
+
+export default NavBar;
