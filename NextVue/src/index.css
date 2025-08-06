@@ -10,8 +10,12 @@
 body {
   font-family: "Poppins", sans-serif;
   background-color: var(--color-primary-light-gray);
-  color: var(--color-slate-100)
+  color: var(--color-slate-100);
 }
+
+/* tailwind.css or global CSS */
+
+
 
 /* styles.css */
 .nav-item {
