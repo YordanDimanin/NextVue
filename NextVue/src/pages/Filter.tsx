@@ -1,10 +1,24 @@
 import NavBar from "../components/NavBar"
+import Genre from "../components/Genre"
+import Button from "../components/Button"
+import Footer from "../components/Footer"
 
 const Filter = () => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <NavBar />
-      <h1>Filter</h1>
+
+      <main className='flex flex-grow flex-col items-center justify-center'>
+
+      <h1 className="sm:text-[32px] font-bold text-2xl pb-2"><span className='text-lime-400'>Select</span> Filters</h1>
+
+      <Genre />
+
+      <Button className='sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400'>Find Movie</Button>
+
+      </main>
+
+      <Footer />
     </div>
   )
 }
