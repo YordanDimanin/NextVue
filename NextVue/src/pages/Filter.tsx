@@ -21,9 +21,15 @@ const Filter = () => {
 
       <h1 className="sm:text-[38px] font-bold text-2xl pb-10"><span className='text-lime-400'>Select Movie</span> Filters</h1>
 
-      <FilterBy />
+      <div>
+        <p className="sm:text-xl font-semibold">Filter By</p>
+        <FilterBy />
+      </div>
 
-      <Genre />
+      <div>
+        <p className="sm:text-xl font-semibold">Genre</p>
+        <Genre />
+      </div>
 
       <Button onClick={() => {fetchMovies(genre, filter)}} className='sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400'>Find Movie</Button>
 
