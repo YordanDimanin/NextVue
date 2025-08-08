@@ -17,9 +17,9 @@ const Filter = () => {
     <div className="flex flex-col min-h-screen">
       <NavBar />
 
-      <main className='flex flex-grow flex-col items-center justify-center'>
+      <main className='flex flex-grow flex-col items-center justify-start p-4 pt-20 md:justify-center'>
 
-      <h1 className="sm:text-[38px] font-bold text-2xl pb-[40px]"><span className='text-lime-400'>Select Movie</span> Filters</h1>
+      <h1 className="sm:text-[38px] font-bold text-2xl pb-10"><span className='text-lime-400'>Select Movie</span> Filters</h1>
 
       <FilterBy />
 
