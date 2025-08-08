@@ -1,19 +1,13 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import { setGenre } from "../app/features/genreSlice";
-import { useEffect } from "react";
 
 const Genre = () => {
 
-  const genre = useSelector((state: any) => state.genre.genre);
   const dispatch = useDispatch();
 
   function getGenre(e: string){
     dispatch(setGenre(e));
   }
-
-  useEffect(() => {
-    console.log(genre);
-  }, [genre])
 
   return (
     <div className="relative inline-block">
