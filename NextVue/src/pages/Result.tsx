@@ -43,6 +43,12 @@ const Result = () => {
           <span className='text-lime-400'>Movie</span> recommendation
         </h1>
 
+        {movies.length === 0 && (
+          <p className="text-primary-white text-center text-xl mb-4">
+            No movies found matching your filters. Please try different selections.
+          </p>
+        )}
+
         {randomIndex !== null && movies[randomIndex] && 
           <Card 
             img={`https://image.tmdb.org/t/p/w500${movies[randomIndex].poster_path}`} 
