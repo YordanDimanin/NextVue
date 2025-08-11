@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import NavBar from "../components/NavBar";
@@ -8,6 +8,8 @@ import FilterBy from "../components/FilterBy";
 import LanguageFilter from "../components/LanguageFilter";
 import Button from "../components/Button";
 import Footer from "../components/Footer";
+
+import ActorSearch from "../components/ActorSearch";
 
 import { fetchMovies } from "../api/api";
 import { setMovies } from "../app/features/movieSlice";
@@ -27,9 +29,12 @@ const Filter = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const selectedActors = useSelector((state) => state.filter.actors);
+
   const handleClick = async () => {
     try {
-      const movies = await fetchMovies(genre, filter, language);
+      const actorIds = selectedActors.map(actor => actor.id);
+      const movies = await fetchMovies(genre, filter, language, actorIds);
       dispatch(setMovies(movies));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
@@ -49,6 +54,11 @@ const Filter = () => {
         <h1 className="sm:text-[38px] font-bold text-2xl pb-10">
           <span className="text-lime-400">Select Movie</span> Filters
         </h1>
+
+        <div className=" w-fit text-center mb-6">
+          <p className="sm:text-xl text-left font-semibold mb-2">Actor</p>
+          <ActorSearch />
+        </div>
 
         <div className=" w-fit text-center">
           <p className="sm:text-xl text-left font-semibold mb-2">Filter By</p>
