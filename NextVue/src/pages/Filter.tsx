@@ -56,7 +56,7 @@ const Filter = () => {
         </h1>
 
         <div className=" w-fit text-center mb-6">
-          <p className="sm:text-xl text-left font-semibold mb-2">Actor</p>
+          <p className="sm:text-xl text-left font-semibold mb-2">Actors</p>
           <ActorSearch />
         </div>
 
