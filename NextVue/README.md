@@ -1,4 +1,4 @@
-# 🎬 MovieMate – TMDB Movie Recommendation App
+# 🎬 NextVue – TMDB Movie Recommendation App
 
 A React + TypeScript + Vite app that connects to the TMDB API to recommend movies.  
 Built with modern tools like **Redux Toolkit**, **Tailwind CSS**, and **React Router**, this app delivers fast, responsive, and visually appealing movie recommendations.
