@@ -1,22 +1,16 @@
-import { useDispatch} from "react-redux";
-import { setGenre } from "../app/features/genreSlice";
+// Genre.tsx
+interface GenreProps {
+  genre: string; // or number if you want
+  setGenre: (value: string) => void;
+}
 
-const Genre = () => {
-
-  const dispatch = useDispatch();
-
-  function getGenre(e: string){
-    dispatch(setGenre(e));
-  }
-
+const Genre = ({ genre, setGenre }: GenreProps) => {
   return (
     <div className="relative inline-block">
-      <select onChange={(e) => {getGenre(e.target.value);} }
-        className="appearance-none
-                   sm:text-2xl sm:py-6 
-                   text-xl py-4 px-10 sm:px-11 text-center
-                   bg-slate-700 border-none text-primary-white
-                   rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
+      <select
+        value={genre}
+        onChange={(e) => setGenre(e.target.value)}
+        className="appearance-none sm:text-2xl sm:py-6 text-xl py-4 px-10 sm:px-11 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
       >
         <option value="28">Action</option>
         <option value="12">Adventure</option>
@@ -37,14 +31,12 @@ const Genre = () => {
         <option value="53">Thriller</option>
         <option value="10752">War</option>
         <option value="37">Western</option>
-
       </select>
-
-      
     </div>
   );
 };
 
 export default Genre;
+
 
 

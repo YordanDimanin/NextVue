@@ -1,28 +1,35 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import NavBar from '../components/NavBar';
-import Genre from '../components/Genre';
-import FilterBy from '../components/FilterBy';
-import Button from '../components/Button';
-import Footer from '../components/Footer';
+import NavBar from "../components/NavBar";
+import Genre from "../components/Genre";
+import FilterBy from "../components/FilterBy";
+import Button from "../components/Button";
+import Footer from "../components/Footer";
 
-import { fetchMovies } from '../api/api';
-import { setMovies } from '../app/features/movieSlice';
+import { fetchMovies } from "../api/api";
+import { setMovies } from "../app/features/movieSlice";
+import { setGenre } from "../app/features/genreSlice";
+import { setFilter } from "../app/features/filterSlice";
 
+const DEFAULT_GENRE = "28";
+const DEFAULT_FILTER = "popularity.desc";
 
 const Filter = () => {
-  const genre = useSelector((state: any) => state.genre.genre);
-  const filter = useSelector((state: any) => state.filter.filter);
+  const [genre, setGenreLocal] = useState(DEFAULT_GENRE);
+  const [filter, setFilterLocal] = useState(DEFAULT_FILTER);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleClick = async () => {
     const movies = await fetchMovies(genre, filter);
     dispatch(setMovies(movies));
-    navigate('/result');
+    dispatch(setGenre(genre));
+    dispatch(setFilter(filter));
+    navigate("/result");
   };
-
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -35,12 +42,12 @@ const Filter = () => {
 
         <div>
           <p className="sm:text-xl font-semibold">Filter By</p>
-          <FilterBy />
+          <FilterBy filter={filter} setFilter={setFilterLocal} />
         </div>
 
         <div>
           <p className="sm:text-xl font-semibold">Genre</p>
-          <Genre />
+          <Genre genre={genre} setGenre={setGenreLocal} />
         </div>
 
         <Button
