@@ -5,6 +5,7 @@ import './index.css'
 import { Provider } from 'react-redux'
 import { store } from './app/store.ts'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import Result from './pages/Result.tsx'
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
     path: '/filter',
     element: <Filter />,
   },
+  {
+    path: '/result',
+    element: <Result />,
+  }
 ])
 
 createRoot(document.getElementById('root')!).render(

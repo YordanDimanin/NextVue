@@ -13,14 +13,14 @@ const NavBar: React.FC = () => {
     <>
       <button
         onClick={toggleMenu}
-        className="text-4xl sm:text-5xl border-routed fixed top-4 right-4 transition transform hover:scale-105 hover:shadow-lg duration-300 z-20"
+        className="text-4xl sm:text-5xl border-routed absolute top-4 right-4 transition transform hover:scale-105 hover:shadow-lg duration-300 z-20"
       >
         {isOpen ? <IoClose /> : <HiMenuAlt1 />}
       </button> 
 
       {isOpen && (
-      <div className="fixed inset-0 z-10">
-          <ul className="flex flex-col gap-6 bg-primary-light-gray text-center justify-center h-screen">
+      <div className="absolute inset-0 z-10 bg-primary-light-gray">
+          <ul className="flex flex-col gap-6 text-center justify-center h-full">
 
             <Link to="/"><li className="nav-item">Home</li></Link>
 

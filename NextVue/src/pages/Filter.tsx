@@ -1,43 +1,66 @@
-import NavBar from "../components/NavBar"
-import Genre from "../components/Genre"
-import FilterBy from "../components/FilterBy"
-import Button from "../components/Button"
-import Footer from "../components/Footer"
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import { fetchMovies } from "../api/api"
-import { useSelector } from "react-redux"
+import NavBar from "../components/NavBar";
+import Genre from "../components/Genre";
+import FilterBy from "../components/FilterBy";
+import Button from "../components/Button";
+import Footer from "../components/Footer";
+
+import { fetchMovies } from "../api/api";
+import { setMovies } from "../app/features/movieSlice";
+import { setGenre } from "../app/features/genreSlice";
+import { setFilter } from "../app/features/filterSlice";
+
+const DEFAULT_GENRE = "28";
+const DEFAULT_FILTER = "popularity.desc";
 
 const Filter = () => {
+  const [genre, setGenreLocal] = useState(DEFAULT_GENRE);
+  const [filter, setFilterLocal] = useState(DEFAULT_FILTER);
 
-  const genre = useSelector((state : any) => state.genre.genre);
-  const filter = useSelector((state : any) => state.filter.filter);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const handleClick = async () => {
+    const movies = await fetchMovies(genre, filter);
+    dispatch(setMovies(movies));
+    dispatch(setGenre(genre));
+    dispatch(setFilter(filter));
+    navigate("/result");
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
 
-      <main className='flex flex-grow flex-col items-center justify-start p-4 pt-20 md:justify-center'>
+      <main className="flex flex-grow flex-col items-center justify-start p-4 pt-20 md:justify-center">
+        <h1 className="sm:text-[38px] font-bold text-2xl pb-10">
+          <span className="text-lime-400">Select Movie</span> Filters
+        </h1>
 
-      <h1 className="sm:text-[38px] font-bold text-2xl pb-10"><span className='text-lime-400'>Select Movie</span> Filters</h1>
+        <div>
+          <p className="sm:text-xl font-semibold">Filter By</p>
+          <FilterBy filter={filter} setFilter={setFilterLocal} />
+        </div>
 
-      <div>
-        <p className="sm:text-xl font-semibold">Filter By</p>
-        <FilterBy />
-      </div>
+        <div>
+          <p className="sm:text-xl font-semibold">Genre</p>
+          <Genre genre={genre} setGenre={setGenreLocal} />
+        </div>
 
-      <div>
-        <p className="sm:text-xl font-semibold">Genre</p>
-        <Genre />
-      </div>
-
-      <Button onClick={() => {fetchMovies(genre, filter)}} className='sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400'>Find Movie</Button>
-
+        <Button
+          onClick={handleClick}
+          className="sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400"
+        >
+          Find Movie
+        </Button>
       </main>
 
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Filter
+export default Filter;
