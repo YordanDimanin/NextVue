@@ -12,7 +12,7 @@ i18n
   .use(LanguageDetector) // detect user language
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
-    fallbackLng: 'en-US', // fallback language if translation is not found
+    fallbackLng: 'en', // fallback language if translation is not found
     debug: true, // Enable debug mode for development
     interpolation: {
       escapeValue: false, // react already safes from xss
@@ -25,10 +25,10 @@ i18n
       caches: ['localStorage'], // Cache language in localStorage
     },
     resources: {
-      'en-US': {
+      'en': {
         translation: enTranslation,
       },
-      'bg-BG': {
+      'bg': {
         translation: bgTranslation,
       },
     },

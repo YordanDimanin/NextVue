@@ -29,15 +29,17 @@ const Filter = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation(); // Initialize useTranslation and get i18n
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
+  const language = useSelector((state: RootState) => state.language.language); // Get language from Redux store
 
   const fetchMoviesData = useCallback(async () => {
     setIsLoading(true);
     try {
       const actorIds = selectedActors.map((actor: Actor) => actor.id);
-      const { movies, totalPages, totalResults } = await fetchMovies(genre, filter, i18n.language, actorIds, 1);
+      // Pass language as both displayLanguage and originalLanguage
+      const { movies, totalPages, totalResults } = await fetchMovies(genre, filter, language, actorIds, 1, language);
       dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
@@ -47,7 +49,7 @@ const Filter = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch, selectedActors, genre, filter, i18n.language]);
+  }, [dispatch, selectedActors, genre, filter, language]); // Add language to dependencies
 
   const handleClick = async () => {
     await fetchMoviesData();
@@ -56,7 +58,7 @@ const Filter = () => {
 
   useEffect(() => {
     fetchMoviesData();
-  }, [genre, filter, selectedActors, i18n.language, fetchMoviesData]); // Add i18n.language to dependencies
+  }, [genre, filter, selectedActors, language, fetchMoviesData]); // Change i18n.language to language in dependencies
 
   return (
     <div className="flex flex-col min-h-screen">
