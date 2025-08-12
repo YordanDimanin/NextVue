@@ -73,7 +73,8 @@
     "es": "Spanish",
     "fr": "French",
     "de": "German",
-    "zh": "Chinese"
+    "zh": "Chinese",
+    "ko": "Korean"
   },
   "actorSearch": {
     "placeholder": "Search actors..."
