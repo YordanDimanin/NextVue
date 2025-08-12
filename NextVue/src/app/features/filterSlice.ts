@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 interface Actor {
   id: number;
   name: string;
-  profile_path: string;
+  profile_path: string | null;
 }
 
 const filterSlice = createSlice({
