@@ -74,5 +74,8 @@
     "it-IT": "🇮🇹 Italian",
     "ja-JP": "🇯🇵 Japanese",
     "ko-KR": "🇰🇷 Korean"
+  },
+  "actorSearch": {
+    "placeholder": "Search actors..."
   }
 }

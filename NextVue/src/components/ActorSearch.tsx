@@ -5,11 +5,13 @@ import { searchActorsByName } from '../app/features/actorSlice'; // Import the n
 import type { RootState } from '../app/store';
 import type { AppDispatch } from '../app/store';
 import type { Actor } from '../types';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const ActorSearch: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const searchResults = useSelector((state: RootState) => state.actor.searchResults); // Get search results
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredActors, setFilteredActors] = useState<Actor[]>([]); // Will be updated by Redux state
@@ -66,7 +68,7 @@ const ActorSearch: React.FC = () => {
       <div className="relative">
         <input
           type="text"
-          placeholder="Search actors..."
+          placeholder={t('actorSearch.placeholder')}
           className="w-60 sm:w-70 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-primary-light-gray text-primary-white border-b-2 border-primary-green"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -89,7 +91,7 @@ const ActorSearch: React.FC = () => {
                   />
                 ) : (
                   <div className="w-8 h-8 rounded-full mr-2 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
-                    No Img
+                    {t('resultPage.noImg')}
                   </div>
                 )}
                 <span className="text-primary-white">{actor.name}</span>
@@ -113,7 +115,7 @@ const ActorSearch: React.FC = () => {
               />
             ) : (
               <div className="w-6 h-6 rounded-full mr-2 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
-                    No Img
+                    {t('resultPage.noImg')}
                   </div>
                 )}
             <span>{actor.name}</span>
