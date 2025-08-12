@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -32,20 +32,19 @@ const Filter = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t, i18n } = useTranslation(); // Initialize useTranslation and get i18n
 
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
 
-  const handleClick = async () => {
+  const fetchMoviesData = async () => {
     setIsLoading(true);
     try {
       const actorIds = selectedActors.map((actor: Actor) => actor.id);
-      const { movies, totalPages } = await fetchMovies(genre, filter, language, actorIds, 1);
-      dispatch(setMovies({ movies, totalPages, page: 1 }));
+      const { movies, totalPages, totalResults } = await fetchMovies(genre, filter, i18n.language, actorIds, 1);
+      dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
       dispatch(setLanguage(language));
-      navigate("/result");
     } catch (error) {
       console.error("Failed to fetch movies:", error);
       // Optionally, show user feedback here
@@ -53,6 +52,15 @@ const Filter = () => {
       setIsLoading(false);
     }
   };
+
+  const handleClick = async () => {
+    await fetchMoviesData();
+    navigate("/result");
+  };
+
+  useEffect(() => {
+    fetchMoviesData();
+  }, [genre, filter, language, selectedActors, i18n.language]); // Add i18n.language to dependencies
 
   return (
     <div className="flex flex-col min-h-screen">

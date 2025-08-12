@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Result = () => {
   const dispatch = useDispatch();
-  const { list: movies, currentPage, totalPages, currentMovieIndex } = useSelector((state: RootState) => state.movies);
+  const { list: movies, currentPage, totalPages, currentMovieIndex, totalResults } = useSelector((state: RootState) => state.movies);
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
   const genre = useSelector((state: RootState) => state.genre.genre);
   const filter = useSelector((state: RootState) => state.filter.filter);
@@ -28,15 +28,17 @@ const Result = () => {
     let allNewMovies: Movie[] = [];
     let newTotalPages = totalPages;
     let newCurrentPage = currentPage;
+    let finalTotalResults = totalResults; // Declare here
 
     for (let i = 0; i < pagesToFetch; i++) {
       if (newCurrentPage + 1 <= newTotalPages) {
         setIsLoading(true);
         try {
           const actorIds = selectedActors.map((actor: Actor) => actor.id);
-          const { movies: fetchedMovies, totalPages: latestTotalPages } = await fetchMovies(genre, filter, language, actorIds, newCurrentPage + 1);
+          const { movies: fetchedMovies, totalPages: latestTotalPages, totalResults: latestTotalResults } = await fetchMovies(genre, filter, language, actorIds, newCurrentPage + 1);
           allNewMovies = [...allNewMovies, ...fetchedMovies];
           newTotalPages = latestTotalPages; // Update totalPages in case it changed
+          finalTotalResults = latestTotalResults; // Assign here
           newCurrentPage++;
         } catch (error) {
           console.error("Failed to fetch next page of movies:", error);
@@ -50,7 +52,7 @@ const Result = () => {
     }
 
     if (allNewMovies.length > 0) {
-      dispatch(setMovies({ movies: allNewMovies, totalPages: newTotalPages, page: newCurrentPage }));
+      dispatch(setMovies({ movies: allNewMovies, totalPages: newTotalPages, page: newCurrentPage, totalResults: finalTotalResults }));
     }
   }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, language]);
 
@@ -105,7 +107,7 @@ const Result = () => {
           <span className='text-lime-400'>{t('resultPage.movie')}</span> {t('resultPage.recommendation')}
         </h1>
 
-        {movies.length === 0 && currentPage === 1 && (
+        {totalResults === 0 && (
           <p className="text-primary-white text-center text-xl mb-4">
             {t('resultPage.noMoviesFound')}
           </p>

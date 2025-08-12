@@ -7,6 +7,7 @@ interface MovieState {
   totalPages: number;
   currentMovieIndex: number;
   seenMovieIds: string[]; // Added to track seen movies
+  totalResults: number; // New property
 }
 
 const initialState: MovieState = {
@@ -15,24 +16,37 @@ const initialState: MovieState = {
   totalPages: 0,
   currentMovieIndex: 0,
   seenMovieIds: [], // Initialize seenMovieIds
+  totalResults: 0, // Initialize totalResults
 };
 
 const moviesSlice = createSlice({
   name: "movies",
   initialState,
   reducers: {
-    setMovies: (state, action: PayloadAction<{ movies: Movie[]; totalPages: number; page: number }>) => {
-      // Shuffle the incoming movies
-      const shuffledMovies = [...action.payload.movies];
-      for (let i = shuffledMovies.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffledMovies[i], shuffledMovies[j]] = [shuffledMovies[j], shuffledMovies[i]];
+    setMovies: (state, action: PayloadAction<{ movies: Movie[]; totalPages: number; page: number; totalResults: number }>) => {
+      const { movies, totalPages, page, totalResults } = action.payload;
+
+      // If it's the first page, replace the list and reset seen movies
+      if (page === 1) {
+        state.list = movies; // No need to shuffle here, shuffle in nextMovie if needed
+        state.seenMovieIds = [];
+      } else {
+        // If it's a subsequent page, append new movies to the existing list
+        // Filter out any movies that are already in the list to avoid duplicates
+        const newMovies = movies.filter(
+          (movie) => !state.list.some((existingMovie) => existingMovie.id === movie.id)
+        );
+        state.list = [...state.list, ...newMovies];
       }
-      state.list = shuffledMovies;
-      state.totalPages = action.payload.totalPages;
-      state.currentPage = action.payload.page;
-      state.currentMovieIndex = 0; // Reset index when new page is loaded
-      state.seenMovieIds = []; // Reset seen movies
+
+      state.totalPages = totalPages;
+      state.currentPage = page;
+      state.totalResults = totalResults;
+
+      // Reset currentMovieIndex only if it's the first page or if the current index is out of bounds
+      if (page === 1 || state.currentMovieIndex >= state.list.length) {
+        state.currentMovieIndex = 0;
+      }
     },
     nextMovie: (state) => {
       // Add the current movie to seenMovieIds before moving to the next

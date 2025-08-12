@@ -11,10 +11,11 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 const Home = () => {
   const dispatch = useDispatch();
   const language = useSelector((state: RootState) => state.language.language);
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t, i18n } = useTranslation(); // Initialize useTranslation
 
   const handleLanguageChange = (newLanguage: string) => {
     dispatch(setLanguage(newLanguage));
+    i18n.changeLanguage(newLanguage);
   };
 
   return (
