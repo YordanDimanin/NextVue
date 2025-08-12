@@ -101,7 +101,7 @@ const Result = () => {
           <span className='text-lime-400'>Movie</span> recommendation
         </h1>
 
-        {movies.length === 0 && (
+        {movies.length === 0 && currentPage === 1 && (
           <p className="text-primary-white text-center text-xl mb-4">
             No movies found matching your filters. Please try different selections.
           </p>
@@ -117,7 +117,7 @@ const Result = () => {
           />
         )}
 
-        {noMoreMovies && (
+        {movies.length > 0 && noMoreMovies && (
           <p className="text-primary-white text-center text-xl mb-4">
             No more movies matching your filters. Please adjust your selections.
           </p>
