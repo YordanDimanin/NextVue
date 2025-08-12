@@ -4,46 +4,53 @@ import Button from "../components/Button"
 import Footer from "../components/Footer"
 
 import { useEffect, useState, useCallback } from "react"
-import { useSelector } from "react-redux"
-import { fetchMovieDetailsWithCast } from "../api/api"
+import { useDispatch, useSelector } from "react-redux"
+import { fetchMovieDetailsWithCast, fetchMovies } from "../api/api"
+import { nextMovie, setMovies } from "../app/features/movieSlice";
 import type { RootState } from "../app/store";
 import type { Actor, Movie } from "../types";
 
 const Result = () => {
-  const movies = useSelector((state: RootState) => state.movies.list);
+  const dispatch = useDispatch();
+  const { list: movies, currentPage, totalPages, currentMovieIndex } = useSelector((state: RootState) => state.movies);
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
-  const [usedIndexes, setUsedIndexes] = useState<number[]>([]);
-  const [randomIndex, setRandomIndex] = useState<number | null>(null);
+  const genre = useSelector((state: RootState) => state.genre.genre);
+  const filter = useSelector((state: RootState) => state.filter.filter);
+  const language = useSelector((state: RootState) => state.language.language);
+
   const [cast, setCast] = useState<Actor[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const pickNewIndex = useCallback(() => {
-    if (usedIndexes.length === movies.length) {
-      // All movies shown, maybe reset or do nothing
-      setUsedIndexes([]);
-      setRandomIndex(null);
-      setCast([]); // Clear cast when resetting
-      return;
+  const fetchNextPage = useCallback(async () => {
+    if (currentPage < totalPages) {
+      setIsLoading(true);
+      try {
+        const actorIds = selectedActors.map((actor: Actor) => actor.id);
+        const { movies: newMovies, totalPages: newTotalPages } = await fetchMovies(genre, filter, language, actorIds, currentPage + 1);
+        dispatch(setMovies({ movies: newMovies, totalPages: newTotalPages, page: currentPage + 1 }));
+      } catch (error) {
+        console.error("Failed to fetch next page of movies:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
+  }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, language]);
 
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * movies.length);
-    } while (usedIndexes.includes(newIndex));
-
-    setUsedIndexes((prev) => [...prev, newIndex]);
-    setRandomIndex(newIndex);
-  }, [movies, usedIndexes, setUsedIndexes, setRandomIndex, setCast]);
-
-  useEffect(() => {
-    if (movies.length && randomIndex === null) {
-      pickNewIndex();
+  const handleRecommendClick = useCallback(() => {
+    if (currentMovieIndex < movies.length - 1) {
+      dispatch(nextMovie());
+    } else if (currentPage < totalPages) {
+      fetchNextPage();
+    } else {
+      // All movies from all pages have been shown
+      console.log("No more movies to recommend.");
     }
-  }, [movies, pickNewIndex, randomIndex]);
+  }, [currentMovieIndex, movies.length, currentPage, totalPages, dispatch, fetchNextPage]);
 
   useEffect(() => {
     const getCast = async () => {
-      if (randomIndex !== null && movies[randomIndex]) {
-        const movieId = (movies[randomIndex] as Movie).id;
+      if (movies.length > 0 && currentMovieIndex < movies.length) {
+        const movieId = (movies[currentMovieIndex] as Movie).id;
         try {
           const { cast: fetchedCast } = await fetchMovieDetailsWithCast(movieId);
           
@@ -64,7 +71,10 @@ const Result = () => {
       }
     };
     getCast();
-  }, [randomIndex, movies, selectedActors]);
+  }, [currentMovieIndex, movies, selectedActors]);
+
+  const currentMovie = movies[currentMovieIndex];
+  const noMoreMovies = currentMovieIndex >= movies.length -1 && currentPage >= totalPages;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -81,21 +91,28 @@ const Result = () => {
           </p>
         )}
 
-        {randomIndex !== null && movies[randomIndex] && 
+        {currentMovie ? (
           <Card 
-            img={`https://image.tmdb.org/t/p/w500${(movies[randomIndex] as Movie).poster_path}`} 
-            title={(movies[randomIndex] as Movie).title} 
-            description={(movies[randomIndex] as Movie).overview} 
-            releaseDate={(movies[randomIndex] as Movie).release_date}
+            img={`https://image.tmdb.org/t/p/w500${currentMovie.poster_path}`} 
+            title={currentMovie.title} 
+            description={currentMovie.overview} 
+            releaseDate={currentMovie.release_date}
             cast={cast}
           />
-        }
+        ) : (
+          !isLoading && movies.length === 0 && (
+            <p className="text-primary-white text-center text-xl mb-4">
+              No movies found matching your filters. Please try different selections.
+            </p>
+          )
+        )}
 
         <Button 
-          onClick={pickNewIndex} 
-          className="sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:hover:bg-primary-light-gray hover:border-2 hover:border-lime-400"
+          onClick={handleRecommendClick} 
+          className={`sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:hover:bg-primary-light-gray hover:border-2 hover:border-lime-400 ${noMoreMovies || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={noMoreMovies || isLoading}
         >
-          Recommend Another Movie
+          {isLoading ? 'Loading...' : 'Recommend Another Movie'}
         </Button>
       </main>
       <Footer />

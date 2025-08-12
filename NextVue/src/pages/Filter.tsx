@@ -36,8 +36,8 @@ const Filter = () => {
   const handleClick = async () => {
     try {
       const actorIds = selectedActors.map((actor: Actor) => actor.id);
-      const movies = await fetchMovies(genre, filter, language, actorIds);
-      dispatch(setMovies(movies));
+      const { movies, totalPages } = await fetchMovies(genre, filter, language, actorIds, 1);
+      dispatch(setMovies({ movies, totalPages, page: 1 }));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
       dispatch(setLanguage(language));
