@@ -1,6 +1,27 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Movie } from "../../types";
 
+// Helper function to shuffle an array
+const shuffleArray = <T>(array: T[]): T[] => {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex !== 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+  }
+
+  return array;
+};
+
 interface MovieState {
   list: Movie[];
   currentPage: number;
@@ -26,14 +47,17 @@ const moviesSlice = createSlice({
     setMovies: (state, action: PayloadAction<{ movies: Movie[]; totalPages: number; page: number; totalResults: number }>) => {
       const { movies, totalPages, page, totalResults } = action.payload;
 
+      // Shuffle the incoming movies array
+      const shuffledMovies = shuffleArray([...movies]);
+
       // If it's the first page, replace the list and reset seen movies
       if (page === 1) {
-        state.list = movies; // No need to shuffle here, shuffle in nextMovie if needed
+        state.list = shuffledMovies;
         state.seenMovieIds = [];
       } else {
         // If it's a subsequent page, append new movies to the existing list
         // Filter out any movies that are already in the list to avoid duplicates
-        const newMovies = movies.filter(
+        const newMovies = shuffledMovies.filter(
           (movie) => !state.list.some((existingMovie) => existingMovie.id === movie.id)
         );
         state.list = [...state.list, ...newMovies];

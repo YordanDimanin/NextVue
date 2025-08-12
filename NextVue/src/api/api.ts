@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Movie, Params } from '../types';
+import type { Params } from '../types';
 
 export const fetchMovies = async (
   genreId: string,

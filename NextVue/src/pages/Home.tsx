@@ -3,20 +3,10 @@ import NavBar from '../components/NavBar.tsx'
 import Footer from '../components/Footer.tsx'
 import { Link } from 'react-router-dom'
 import LanguageFilter from '../components/LanguageFilter.tsx';
-import { useSelector, useDispatch } from 'react-redux';
-import { setLanguage } from '../app/features/languageSlice';
-import type { RootState } from '../app/store';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const language = useSelector((state: RootState) => state.language.language);
-  const { t, i18n } = useTranslation(); // Initialize useTranslation
-
-  const handleLanguageChange = (newLanguage: string) => {
-    dispatch(setLanguage(newLanguage));
-    i18n.changeLanguage(newLanguage);
-  };
+  const { t } = useTranslation(); // Initialize useTranslation
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -29,7 +19,7 @@ const Home = () => {
 
         <div className="mb-6 w-fit text-center">
           <p className="sm:text-xl text-left font-semibold mb-2">{t('home.languageLabel')}</p>
-          <LanguageFilter language={language} setLanguage={handleLanguageChange} allowedLanguages={['en-US', 'bg-BG']} />
+          <LanguageFilter allowedLanguages={['en-US', 'bg-BG']} />
         </div>
 
         <Link to="/filter"><Button className='sm:text-2xl sm:py-6 sm:px-12 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400'>{t('home.findMovie')}</Button></Link>

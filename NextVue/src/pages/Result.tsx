@@ -26,19 +26,16 @@ const Result = () => {
   const fetchNextPage = useCallback(async () => {
     const pagesToFetch = 5; // Fetch 5 pages at a time
     let allNewMovies: Movie[] = [];
-    let newTotalPages = totalPages;
     let newCurrentPage = currentPage;
-    let finalTotalResults = totalResults; // Declare here
+    const actorIds = selectedActors.map((actor: Actor) => actor.id);
 
     for (let i = 0; i < pagesToFetch; i++) {
-      if (newCurrentPage + 1 <= newTotalPages) {
+      if (newCurrentPage + 1 <= totalPages) {
         setIsLoading(true);
         try {
-          const actorIds = selectedActors.map((actor: Actor) => actor.id);
-          const { movies: fetchedMovies, totalPages: latestTotalPages, totalResults: latestTotalResults } = await fetchMovies(genre, filter, language, actorIds, newCurrentPage + 1);
+          const { movies: fetchedMovies } = await fetchMovies(genre, filter, language, actorIds, newCurrentPage + 1);
+          
           allNewMovies = [...allNewMovies, ...fetchedMovies];
-          newTotalPages = latestTotalPages; // Update totalPages in case it changed
-          finalTotalResults = latestTotalResults; // Assign here
           newCurrentPage++;
         } catch (error) {
           console.error("Failed to fetch next page of movies:", error);
@@ -52,9 +49,9 @@ const Result = () => {
     }
 
     if (allNewMovies.length > 0) {
-      dispatch(setMovies({ movies: allNewMovies, totalPages: newTotalPages, page: newCurrentPage, totalResults: finalTotalResults }));
+      dispatch(setMovies({ movies: allNewMovies, totalPages: totalPages, page: newCurrentPage, totalResults: totalResults }));
     }
-  }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, language]);
+  }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, language, totalResults]);
 
   const handleRecommendClick = useCallback(() => {
     if (currentMovieIndex < movies.length - 1) {

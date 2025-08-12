@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -15,19 +15,16 @@ import { fetchMovies } from "../api/api";
 import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
-import { setLanguage } from "../app/features/languageSlice";
 import type { RootState } from "../app/store";
 import type { Actor } from "../types";
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const DEFAULT_GENRE = "28"; // Action genre as default
 const DEFAULT_FILTER = "popularity.desc";
-const DEFAULT_LANGUAGE = "en-US";
 
 const Filter = () => {
   const [genre, setGenreLocal] = useState<string>(DEFAULT_GENRE);
   const [filter, setFilterLocal] = useState<string>(DEFAULT_FILTER);
-  const [language, setLanguageLocal] = useState<string>(DEFAULT_LANGUAGE);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
@@ -36,7 +33,7 @@ const Filter = () => {
 
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
 
-  const fetchMoviesData = async () => {
+  const fetchMoviesData = useCallback(async () => {
     setIsLoading(true);
     try {
       const actorIds = selectedActors.map((actor: Actor) => actor.id);
@@ -44,14 +41,13 @@ const Filter = () => {
       dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
-      dispatch(setLanguage(language));
     } catch (error) {
       console.error("Failed to fetch movies:", error);
       // Optionally, show user feedback here
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dispatch, selectedActors, genre, filter, i18n.language]);
 
   const handleClick = async () => {
     await fetchMoviesData();
@@ -60,7 +56,7 @@ const Filter = () => {
 
   useEffect(() => {
     fetchMoviesData();
-  }, [genre, filter, language, selectedActors, i18n.language]); // Add i18n.language to dependencies
+  }, [genre, filter, selectedActors, i18n.language, fetchMoviesData]); // Add i18n.language to dependencies
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -88,7 +84,7 @@ const Filter = () => {
 
         <div className="mb-6 w-fit text-center">
           <p className="sm:text-xl text-left font-semibold mb-2">{t('filterPage.language')}</p>
-          <LanguageFilter language={language} setLanguage={setLanguageLocal} />
+          <LanguageFilter />
         </div>
 
         <Button

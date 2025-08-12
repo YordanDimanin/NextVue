@@ -2,13 +2,11 @@
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 interface LanguageFilterProps {
-  language: string;
-  setLanguage: (value: string) => void;
   allowedLanguages?: string[]; // New optional prop
 }
 
-const LanguageFilter = ({ language, setLanguage, allowedLanguages }: LanguageFilterProps) => {
-  const { t } = useTranslation(); // Initialize useTranslation
+const LanguageFilter = ({ allowedLanguages }: LanguageFilterProps) => {
+  const { t, i18n } = useTranslation(); // Initialize useTranslation and get i18n instance
 
   const allLanguages = [
     { value: "en-US", labelKey: "languageOptions.en-US" },
@@ -28,8 +26,8 @@ const LanguageFilter = ({ language, setLanguage, allowedLanguages }: LanguageFil
   return (
     <div className="relative inline-block">
       <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value)}
+        value={i18n.language} // Use i18n.language to reflect current language
+        onChange={(e) => i18n.changeLanguage(e.target.value)}
         className="appearance-none sm:text-2xl sm:py-6 mb-4 text-xl py-4 px-11 sm:px-13 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
       >
         {filteredLanguages.map((lang) => (
