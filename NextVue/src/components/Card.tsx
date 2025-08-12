@@ -66,7 +66,7 @@ const Card = ({ img, title, description, releaseDate, cast }: CardProps) => {
                 onClick={() => setShowAllCast(!showAllCast)}
                 className="mt-4 text-lime-400 hover:underline"
               >
-                {showAllCast ? "Show less" : "Show more"}
+                {showAllCast ? "Show less" : "Show full cast"}
               </button>
             )}
           </div>
