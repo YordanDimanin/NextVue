@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Movie, Params } from '../types';
 
 export const fetchMovies = async (
   genreId: string,
@@ -7,10 +8,10 @@ export const fetchMovies = async (
   actorIds: number[] = []
 ) => {
   const today = new Date().toISOString().split("T")[0];
-  let allResults: any[] = [];
+  let allResults: Movie[] = [];
 
   for (let page = 1; page <= 10; page++) {
-    const params: any = {
+    const params: Params = {
       api_key: import.meta.env.VITE_TMDB_API_KEY,
       with_genres: genreId,
       sort_by: sortBy,
@@ -31,13 +32,53 @@ export const fetchMovies = async (
   }
 
   // Filter out movies missing title or overview in selected language
-  const filteredResults = allResults.filter(
-    (movie) =>
+  let filteredResults = allResults.filter(
+    (movie: Movie) =>
       movie.title &&
       movie.overview &&
       movie.title.trim() !== "" &&
       movie.overview.trim() !== ""
   );
 
+  if (actorIds.length > 0) {
+    const moviesWithAllActors: Movie[] = [];
+    for (const movie of filteredResults) {
+      const { cast } = await fetchMovieDetailsWithCast(movie.id);
+      const castIds = cast.map((actor: any) => actor.id);
+      const hasAllActors = actorIds.every((actorId) =>
+        castIds.includes(actorId)
+      );
+      if (hasAllActors) {
+        moviesWithAllActors.push(movie);
+      }
+    }
+    filteredResults = moviesWithAllActors;
+  }
+
   return filteredResults;
+};
+
+export const fetchMovieDetailsWithCast = async (movieId: number) => {
+  const movieDetailsRes = await axios.get(
+    `https://api.themoviedb.org/3/movie/${movieId}`,
+    {
+      params: {
+        api_key: import.meta.env.VITE_TMDB_API_KEY,
+      },
+    }
+  );
+
+  const movieCreditsRes = await axios.get(
+    `https://api.themoviedb.org/3/movie/${movieId}/credits`,
+    {
+      params: {
+        api_key: import.meta.env.VITE_TMDB_API_KEY,
+      },
+    }
+  );
+
+  return {
+    details: movieDetailsRes.data,
+    cast: movieCreditsRes.data.cast,
+  };
 };

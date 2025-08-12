@@ -2,21 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addActor, removeActor } from "../app/features/filterSlice";
 import { searchActorsByName } from '../app/features/actorSlice'; // Import the new thunk
-import { store } from '../app/store';
-
-interface Actor {
-  id: number;
-  name: string;
-  profile_path: string;
-}
+import type { RootState } from '../app/store';
+import type { AppDispatch } from '../app/store';
+import type { Actor } from '../types';
 
 const ActorSearch: React.FC = () => {
-  const dispatch = useDispatch();
-  const searchResults = useSelector((state) => state.actor.searchResults); // Get search results
-  const selectedActors = useSelector((state) => state.filter.actors);
+  const dispatch: AppDispatch = useDispatch();
+  const searchResults = useSelector((state: RootState) => state.actor.searchResults); // Get search results
+  const selectedActors = useSelector((state: RootState) => state.filter.actors);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredActors, setFilteredActors] = useState([]); // Will be updated by Redux state
+  const [filteredActors, setFilteredActors] = useState<Actor[]>([]); // Will be updated by Redux state
   const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -32,10 +28,10 @@ const ActorSearch: React.FC = () => {
     if (searchTerm.length > 0) {
       // Filter out actors already selected
       const newFilteredActors = searchResults.filter(
-        (actor) => !selectedActors.some((selected) => selected.id === actor.id)
+        (actor: Actor) => !selectedActors.some((selected: Actor) => selected.id === actor.id)
       );
       // Only show actors with a profile path
-      const actorsWithProfile = newFilteredActors.filter(actor => actor.profile_path);
+      const actorsWithProfile = newFilteredActors.filter((actor: Actor) => actor.profile_path);
       setFilteredActors(actorsWithProfile);
     } else {
       setFilteredActors([]);
@@ -55,13 +51,13 @@ const ActorSearch: React.FC = () => {
     };
   }, []);
 
-  const handleActorSelect = (actor) => {
+  const handleActorSelect = (actor: Actor) => {
     dispatch(addActor(actor));
     setSearchTerm('');
     setShowDropdown(false);
   };
 
-  const handleRemoveActor = (actorId) => {
+  const handleRemoveActor = (actorId: number) => {
     dispatch(removeActor(actorId));
   };
 
@@ -79,7 +75,7 @@ const ActorSearch: React.FC = () => {
         />
         {showDropdown && filteredActors.length > 0 && (
           <div className="absolute z-10 w-full mt-1 bg-primary-light-gray rounded-lg shadow-lg max-h-56 overflow-y-auto text-primary-white">
-            {filteredActors.map((actor) => (
+            {filteredActors.map((actor: Actor) => (
               <div
                 key={actor.id}
                 className="flex items-center p-2 cursor-pointer hover:bg-primary-black"
@@ -103,8 +99,8 @@ const ActorSearch: React.FC = () => {
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-4">
-        {selectedActors.map((actor) => (
+      <div className="flex flex-wrap justify-start gap-4 mt-4">
+        {selectedActors.map((actor: Actor) => (
           <div
             key={actor.id}
             className="flex items-center bg-primary-light-gray text-primary-white rounded-lg p-2 pr-1 text-sm"
