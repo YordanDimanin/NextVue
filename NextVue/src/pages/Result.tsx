@@ -22,30 +22,46 @@ const Result = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchNextPage = useCallback(async () => {
-    if (currentPage < totalPages) {
-      setIsLoading(true);
-      try {
-        const actorIds = selectedActors.map((actor: Actor) => actor.id);
-        const { movies: newMovies, totalPages: newTotalPages } = await fetchMovies(genre, filter, language, actorIds, currentPage + 1);
-        dispatch(setMovies({ movies: newMovies, totalPages: newTotalPages, page: currentPage + 1 }));
-      } catch (error) {
-        console.error("Failed to fetch next page of movies:", error);
-      } finally {
-        setIsLoading(false);
+    const pagesToFetch = 5; // Fetch 5 pages at a time
+    let allNewMovies: Movie[] = [];
+    let newTotalPages = totalPages;
+    let newCurrentPage = currentPage;
+
+    for (let i = 0; i < pagesToFetch; i++) {
+      if (newCurrentPage + 1 <= newTotalPages) {
+        setIsLoading(true);
+        try {
+          const actorIds = selectedActors.map((actor: Actor) => actor.id);
+          const { movies: fetchedMovies, totalPages: latestTotalPages } = await fetchMovies(genre, filter, language, actorIds, newCurrentPage + 1);
+          allNewMovies = [...allNewMovies, ...fetchedMovies];
+          newTotalPages = latestTotalPages; // Update totalPages in case it changed
+          newCurrentPage++;
+        } catch (error) {
+          console.error("Failed to fetch next page of movies:", error);
+          break; // Stop fetching if an error occurs
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        break; // No more pages to fetch
       }
+    }
+
+    if (allNewMovies.length > 0) {
+      dispatch(setMovies({ movies: allNewMovies, totalPages: newTotalPages, page: newCurrentPage }));
     }
   }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, language]);
 
   const handleRecommendClick = useCallback(() => {
     if (currentMovieIndex < movies.length - 1) {
       dispatch(nextMovie());
-    } else if (currentPage < totalPages) {
+    } else if (currentPage < totalPages && !isLoading) {
+      console.log("Fetching next page...");
       fetchNextPage();
     } else {
-      // All movies from all pages have been shown
       console.log("No more movies to recommend.");
     }
-  }, [currentMovieIndex, movies.length, currentPage, totalPages, dispatch, fetchNextPage]);
+  }, [currentMovieIndex, movies.length, currentPage, totalPages, dispatch, fetchNextPage, isLoading]);
 
   useEffect(() => {
     const getCast = async () => {
@@ -91,7 +107,7 @@ const Result = () => {
           </p>
         )}
 
-        {currentMovie ? (
+        {currentMovie && (
           <Card 
             img={`https://image.tmdb.org/t/p/w500${currentMovie.poster_path}`} 
             title={currentMovie.title} 
@@ -99,12 +115,6 @@ const Result = () => {
             releaseDate={currentMovie.release_date}
             cast={cast}
           />
-        ) : (
-          !isLoading && movies.length === 0 && (
-            <p className="text-primary-white text-center text-xl mb-4">
-              No movies found matching your filters. Please try different selections.
-            </p>
-          )
         )}
 
         <Button 
