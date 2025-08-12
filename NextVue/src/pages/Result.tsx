@@ -59,7 +59,7 @@ const Result = () => {
       console.log("Fetching next page...");
       fetchNextPage();
     } else {
-      console.log("No more movies to recommend.");
+      // No more movies to recommend, message is now displayed in UI
     }
   }, [currentMovieIndex, movies.length, currentPage, totalPages, dispatch, fetchNextPage, isLoading]);
 
@@ -115,6 +115,12 @@ const Result = () => {
             releaseDate={currentMovie.release_date}
             cast={cast}
           />
+        )}
+
+        {noMoreMovies && (
+          <p className="text-primary-white text-center text-xl mb-4">
+            No more movies matching your filters. Please adjust your selections.
+          </p>
         )}
 
         <Button 
