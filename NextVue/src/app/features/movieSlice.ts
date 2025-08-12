@@ -6,6 +6,7 @@ interface MovieState {
   currentPage: number;
   totalPages: number;
   currentMovieIndex: number;
+  seenMovieIds: string[]; // Added to track seen movies
 }
 
 const initialState: MovieState = {
@@ -13,6 +14,7 @@ const initialState: MovieState = {
   currentPage: 0,
   totalPages: 0,
   currentMovieIndex: 0,
+  seenMovieIds: [], // Initialize seenMovieIds
 };
 
 const moviesSlice = createSlice({
@@ -20,13 +22,30 @@ const moviesSlice = createSlice({
   initialState,
   reducers: {
     setMovies: (state, action: PayloadAction<{ movies: Movie[]; totalPages: number; page: number }>) => {
-      state.list = action.payload.movies;
+      // Shuffle the incoming movies
+      const shuffledMovies = [...action.payload.movies];
+      for (let i = shuffledMovies.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledMovies[i], shuffledMovies[j]] = [shuffledMovies[j], shuffledMovies[i]];
+      }
+      state.list = shuffledMovies;
       state.totalPages = action.payload.totalPages;
       state.currentPage = action.payload.page;
       state.currentMovieIndex = 0; // Reset index when new page is loaded
+      state.seenMovieIds = []; // Reset seen movies
     },
     nextMovie: (state) => {
-      state.currentMovieIndex += 1;
+      // Add the current movie to seenMovieIds before moving to the next
+      if (state.currentMovieIndex < state.list.length) {
+        state.seenMovieIds.push(state.list[state.currentMovieIndex].id);
+      }
+
+      // Find the next unseen movie
+      let nextIndex = state.currentMovieIndex + 1;
+      while (nextIndex < state.list.length && state.seenMovieIds.includes(state.list[nextIndex].id)) {
+        nextIndex++;
+      }
+      state.currentMovieIndex = nextIndex;
     },
     resetMovieIndex: (state) => {
       state.currentMovieIndex = 0;
