@@ -32,13 +32,28 @@ export const fetchMovies = async (
   }
 
   // Filter out movies missing title or overview in selected language
-  const filteredResults = allResults.filter(
+  let filteredResults = allResults.filter(
     (movie: Movie) =>
       movie.title &&
       movie.overview &&
       movie.title.trim() !== "" &&
       movie.overview.trim() !== ""
   );
+
+  if (actorIds.length > 0) {
+    const moviesWithAllActors: Movie[] = [];
+    for (const movie of filteredResults) {
+      const { cast } = await fetchMovieDetailsWithCast(movie.id);
+      const castIds = cast.map((actor: any) => actor.id);
+      const hasAllActors = actorIds.every((actorId) =>
+        castIds.includes(actorId)
+      );
+      if (hasAllActors) {
+        moviesWithAllActors.push(movie);
+      }
+    }
+    filteredResults = moviesWithAllActors;
+  }
 
   return filteredResults;
 };
