@@ -17,11 +17,29 @@ const Result = () => {
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
   const genre = useSelector((state: RootState) => state.genre.genre);
   const filter = useSelector((state: RootState) => state.filter.filter);
-  const language = useSelector((state: RootState) => state.language.language);
+  const uiLanguage = useSelector((state: RootState) => state.language.language);
+  const movieLanguage = useSelector((state: RootState) => state.filter.movieLanguage);
   const { t } = useTranslation(); // Initialize useTranslation
 
   const [cast, setCast] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const fetchMoviesInitial = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const actorIds = selectedActors.map((actor: Actor) => actor.id);
+      const { movies, totalPages, totalResults } = await fetchMovies(genre, filter, uiLanguage, actorIds, 1, movieLanguage);
+      dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
+    } catch (error) {
+      console.error("Failed to fetch movies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [dispatch, selectedActors, genre, filter, uiLanguage, movieLanguage]);
+
+  useEffect(() => {
+    fetchMoviesInitial();
+  }, [fetchMoviesInitial]);
 
   const fetchNextPage = useCallback(async () => {
     const pagesToFetch = 5; // Fetch 5 pages at a time
@@ -33,7 +51,7 @@ const Result = () => {
       if (newCurrentPage + 1 <= totalPages) {
         setIsLoading(true);
         try {
-          const { movies: fetchedMovies } = await fetchMovies(genre, filter, language, actorIds, newCurrentPage + 1);
+          const { movies: fetchedMovies } = await fetchMovies(genre, filter, uiLanguage, actorIds, newCurrentPage + 1, movieLanguage);
           
           allNewMovies = [...allNewMovies, ...fetchedMovies];
           newCurrentPage++;
@@ -51,7 +69,7 @@ const Result = () => {
     if (allNewMovies.length > 0) {
       dispatch(setMovies({ movies: allNewMovies, totalPages: totalPages, page: newCurrentPage, totalResults: totalResults }));
     }
-  }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, language, totalResults]);
+  }, [currentPage, totalPages, dispatch, selectedActors, genre, filter, uiLanguage, movieLanguage, totalResults]);
 
   const handleRecommendClick = useCallback(() => {
     if (currentMovieIndex < movies.length - 1) {
@@ -69,7 +87,7 @@ const Result = () => {
       if (movies.length > 0 && currentMovieIndex < movies.length) {
         const movieId = (movies[currentMovieIndex] as Movie).id;
         try {
-          const { cast: fetchedCast } = await fetchMovieDetailsWithCast(movieId);
+          const { cast: fetchedCast } = await fetchMovieDetailsWithCast(movieId, uiLanguage); // Pass language here
           
           const fetchedCastIds = new Set(fetchedCast.map((actor: Actor) => actor.id));
           const combinedCast = [...fetchedCast];
@@ -90,7 +108,7 @@ const Result = () => {
       }
     };
     getCast();
-  }, [currentMovieIndex, movies, selectedActors]);
+  }, [currentMovieIndex, movies, selectedActors, uiLanguage]); // Add language to dependencies
 
   const currentMovie = movies[currentMovieIndex];
   const noMoreMovies = currentMovieIndex >= movies.length -1 && currentPage >= totalPages;

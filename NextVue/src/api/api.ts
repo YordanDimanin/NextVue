@@ -52,12 +52,13 @@ export const fetchMovies = async (
   };
 };
 
-export const fetchMovieDetailsWithCast = async (movieId: number) => {
+export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {
   const movieDetailsRes = await axios.get(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       params: {
         api_key: import.meta.env.VITE_TMDB_API_KEY,
+        language: language,
       },
     }
   );
@@ -67,6 +68,7 @@ export const fetchMovieDetailsWithCast = async (movieId: number) => {
     {
       params: {
         api_key: import.meta.env.VITE_TMDB_API_KEY,
+        language: language, // Add language to credits request as well
       },
     }
   );

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Filter from './pages/Filter';
@@ -6,6 +5,7 @@ import Result from './pages/Result';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import type { RootState } from './app/store';
+import { useEffect } from 'react'; // Import useEffect
 
 function App() {
   const { i18n } = useTranslation();

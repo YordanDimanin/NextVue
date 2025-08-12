@@ -11,6 +11,7 @@ const filterSlice = createSlice({
     initialState: {
         filter: "popularity.desc",
         actors: [] as Actor[], // Initialize actors array
+        movieLanguage: "en", // Default movie language
     },
     reducers: {
         setFilter: (state, action) => {
@@ -22,8 +23,11 @@ const filterSlice = createSlice({
         removeActor: (state, action) => {
             state.actors = state.actors.filter(actor => actor.id !== action.payload);
         },
+        setMovieLanguage: (state, action) => {
+            state.movieLanguage = action.payload;
+        },
     },
 });
 
-export const { setFilter, addActor, removeActor } = filterSlice.actions;
+export const { setFilter, addActor, removeActor, setMovieLanguage } = filterSlice.actions;
 export default filterSlice.reducer;

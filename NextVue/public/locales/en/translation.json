@@ -20,6 +20,7 @@
     "filterBy": "Filter By",
     "genre": "Genre",
     "language": "Language",
+    "filmType": "Film Type",
     "findMovie": "Find Movie",
     "loading": "Loading..."
   },
@@ -68,12 +69,9 @@
   "languageOptions": {
     "en": "English",
     "bg": "Bulgarian",
-    "es": "Spanish",
-    "fr": "French",
-    "de": "German",
-    "it": "Italian",
     "ja": "Japanese",
-    "ko": "Korean"
+    "es": "Spanish",
+    "fr": "French"
   },
   "actorSearch": {
     "placeholder": "Search actors..."
