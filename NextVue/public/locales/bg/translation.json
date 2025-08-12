@@ -66,16 +66,13 @@
     "western": "Уестърн"
   },
   "languageOptions": {
-    "en-US": "English (US)",
-    "bg-BG": "Български",
-    "es-ES": "Español",
-    "fr-FR": "Français",
-    "de-DE": "Deutsch",
-    "it-IT": "Italiano",
-    "ja-JP": "日本語",
-    "ko-KR": "한국어"
-  },
-  "actorSearch": {
-    "placeholder": "Търсене на актьори..."
+    "en": "Английски",
+    "bg": "Български",
+    "es": "Испански",
+    "fr": "Френски",
+    "de": "Немски",
+    "it": "Италиански",
+    "ja": "Японски",
+    "ko": "Корейски"
   }
 }
