@@ -9,12 +9,19 @@ export const fetchMovies = async (
   page: number = 1,
   originalLanguage?: string // New optional parameter
 ) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedToday = `${year}-${month}-${day}`;
+
   const params: Params = {
     api_key: import.meta.env.VITE_TMDB_API_KEY,
     with_genres: genreId,
     sort_by: sortBy,
     language: displayLanguage, // Use displayLanguage here
     page,
+    'primary_release_date.lte': formattedToday, // Only movies released on or before today
   };
 
   if (actorIds.length > 0) {
