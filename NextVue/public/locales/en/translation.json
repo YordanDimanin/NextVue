@@ -1,0 +1,78 @@
+{
+  "home": {
+    "welcome": "Welcome to ",
+    "appName": "NextVue",
+    "description": "NextVue is your personal movie companion — helping you discover great films based on your favorite genres.",
+    "findMovie": "Find Movie",
+    "languageLabel": "Language"
+  },
+  "navbar": {
+    "home": "Home",
+    "filter": "Filter"
+  },
+  "footer": {
+    "disclaimer": "This product uses the TMDb API but is not endorsed or certified by TMDb."
+  },
+  "filterPage": {
+    "selectMovie": "Select Movie",
+    "filters": "Filters",
+    "actors": "Actors",
+    "filterBy": "Filter By",
+    "genre": "Genre",
+    "language": "Language",
+    "findMovie": "Find Movie",
+    "loading": "Loading..."
+  },
+  "resultPage": {
+    "movie": "Movie",
+    "recommendation": "recommendation",
+    "noMoviesFound": "No movies found matching your filters. Please try different selections.",
+    "noMoreMovies": "No more movies matching your filters. Please adjust your selections.",
+    "recommendAnotherMovie": "Recommend Another Movie",
+    "loading": "Loading...",
+    "releaseDate": "Release Date:",
+    "cast": "Cast:",
+    "showLess": "Show less",
+    "showFullCast": "Show full cast",
+    "noImage": "No Image",
+    "noImg": "No Img"
+  },
+  "filterByOptions": {
+    "mostPopular": "Most Popular",
+    "highestRated": "Highest Rated",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "mostVoted": "Most Voted"
+  },
+  "genreOptions": {
+    "action": "Action",
+    "adventure": "Adventure",
+    "animation": "Animation",
+    "comedy": "Comedy",
+    "crime": "Crime",
+    "documentary": "Documentary",
+    "drama": "Drama",
+    "family": "Family",
+    "fantasy": "Fantasy",
+    "history": "History",
+    "horror": "Horror",
+    "music": "Music",
+    "mystery": "Mystery",
+    "romance": "Romance",
+    "scienceFiction": "Science Fiction",
+    "tvMovie": "TV Movie",
+    "thriller": "Thriller",
+    "war": "War",
+    "western": "Western"
+  },
+  "languageOptions": {
+    "en-US": "🇺🇸 English (US)",
+    "bg-BG": "🇧🇬 Bulgarian",
+    "es-ES": "🇪🇸 Spanish",
+    "fr-FR": "🇫🇷 French",
+    "de-DE": "🇩🇪 German",
+    "it-IT": "🇮🇹 Italian",
+    "ja-JP": "🇯🇵 Japanese",
+    "ko-KR": "🇰🇷 Korean"
+  }
+}

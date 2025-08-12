@@ -18,6 +18,7 @@ import { setFilter } from "../app/features/filterSlice";
 import { setLanguage } from "../app/features/languageSlice";
 import type { RootState } from "../app/store";
 import type { Actor } from "../types";
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const DEFAULT_GENRE = "28"; // Action genre as default
 const DEFAULT_FILTER = "popularity.desc";
@@ -31,6 +32,7 @@ const Filter = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
 
@@ -58,26 +60,26 @@ const Filter = () => {
 
       <main className="flex flex-grow flex-col items-center justify-start p-4 pt-20 md:justify-center max-w-4xl mx-auto">
         <h1 className="sm:text-[38px] font-bold text-2xl pb-10">
-          <span className="text-lime-400">Select Movie</span> Filters
+          <span className="text-lime-400">{t('filterPage.selectMovie')}</span> {t('filterPage.filters')}
         </h1>
 
         <div className=" w-fit text-center mb-6">
-          <p className="sm:text-xl text-left font-semibold mb-2">Actors</p>
+          <p className="sm:text-xl text-left font-semibold mb-2">{t('filterPage.actors')}</p>
           <ActorSearch />
         </div>
 
         <div className=" w-fit text-center">
-          <p className="sm:text-xl text-left font-semibold mb-2">Filter By</p>
+          <p className="sm:text-xl text-left font-semibold mb-2">{t('filterPage.filterBy')}</p>
           <FilterBy filter={filter} setFilter={setFilterLocal} />
         </div>
 
         <div className="mb-6 text-center w-fit">
-          <p className="sm:text-xl font-semibold mb-2 text-left">Genre</p>
+          <p className="sm:text-xl font-semibold mb-2 text-left">{t('filterPage.genre')}</p>
           <Genre genre={genre} setGenre={setGenreLocal} />
         </div>
 
         <div className="mb-6 w-fit text-center">
-          <p className="sm:text-xl text-left font-semibold mb-2">Language</p>
+          <p className="sm:text-xl text-left font-semibold mb-2">{t('filterPage.language')}</p>
           <LanguageFilter language={language} setLanguage={setLanguageLocal} />
         </div>
 
@@ -86,7 +88,7 @@ const Filter = () => {
           loading={isLoading}
           className="sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400 active:text-lime-400 active:bg-primary-light-gray active:border-2 active:border-lime-400 focus:text-lime-400 focus:bg-primary-light-gray focus:border-2 focus:border-lime-400"
         >
-          Find Movie
+          {isLoading ? t('filterPage.loading') : t('filterPage.findMovie')}
         </Button>
       </main>
 

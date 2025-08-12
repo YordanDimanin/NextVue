@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { HiMenuAlt1 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const NavBar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
@@ -22,9 +24,9 @@ const NavBar: React.FC = () => {
       <div className="absolute inset-0 z-10 bg-primary-light-gray">
           <ul className="flex flex-col gap-6 text-center justify-center h-full">
 
-            <Link to="/"><li className="nav-item">Home</li></Link>
+            <Link to="/"><li className="nav-item">{t('navbar.home')}</li></Link>
 
-            <Link to="/filter"><li className="nav-item">Filter</li></Link>
+            <Link to="/filter"><li className="nav-item">{t('navbar.filter')}</li></Link>
 
           </ul>
       </div>

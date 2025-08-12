@@ -9,6 +9,7 @@ import { fetchMovieDetailsWithCast, fetchMovies } from "../api/api"
 import { nextMovie, setMovies } from "../app/features/movieSlice";
 import type { RootState } from "../app/store";
 import type { Actor, Movie } from "../types";
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const Result = () => {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ const Result = () => {
   const genre = useSelector((state: RootState) => state.genre.genre);
   const filter = useSelector((state: RootState) => state.filter.filter);
   const language = useSelector((state: RootState) => state.language.language);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const [cast, setCast] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +86,8 @@ const Result = () => {
           console.error("Error fetching cast details:", error);
           setCast([]);
         }
+      } else {
+        setCast([]);
       }
     };
     getCast();
@@ -98,28 +102,28 @@ const Result = () => {
       <main className="flex flex-grow flex-col items-center justify-start p-4 pt-20 md:justify-center">
 
         <h1 className="sm:text-[38px] font-bold text-2xl pb-10">
-          <span className='text-lime-400'>Movie</span> recommendation
+          <span className='text-lime-400'>{t('resultPage.movie')}</span> {t('resultPage.recommendation')}
         </h1>
 
         {movies.length === 0 && currentPage === 1 && (
           <p className="text-primary-white text-center text-xl mb-4">
-            No movies found matching your filters. Please try different selections.
+            {t('resultPage.noMoviesFound')}
           </p>
         )}
 
         {currentMovie && (
           <Card 
             img={`https://image.tmdb.org/t/p/w500${currentMovie.poster_path}`} 
-            title={currentMovie.title} 
-            description={currentMovie.overview} 
-            releaseDate={currentMovie.release_date}
+            title={currentMovie.title} // Excluded from translation
+            description={currentMovie.overview} // Excluded from translation
+            releaseDate={currentMovie.release_date} // Removed redundant translation
             cast={cast}
           />
         )}
 
         {movies.length > 0 && noMoreMovies && (
           <p className="text-primary-white text-center text-xl mb-4">
-            No more movies matching your filters. Please adjust your selections.
+            {t('resultPage.noMoreMovies')}
           </p>
         )}
 
@@ -128,7 +132,7 @@ const Result = () => {
           className={`sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:hover:bg-primary-light-gray hover:border-2 hover:border-lime-400 ${noMoreMovies || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={noMoreMovies || isLoading}
         >
-          {isLoading ? 'Loading...' : 'Recommend Another Movie'}
+          {isLoading ? t('resultPage.loading') : t('resultPage.recommendAnotherMovie')}
         </Button>
       </main>
       <Footer />
@@ -137,4 +141,3 @@ const Result = () => {
 }
 
 export default Result
-
