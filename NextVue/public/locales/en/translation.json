@@ -71,7 +71,9 @@
     "bg": "Bulgarian",
     "ja": "Japanese",
     "es": "Spanish",
-    "fr": "French"
+    "fr": "French",
+    "de": "German",
+    "zh": "Chinese"
   },
   "actorSearch": {
     "placeholder": "Search actors..."

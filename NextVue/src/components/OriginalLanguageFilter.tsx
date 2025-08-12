@@ -15,6 +15,8 @@ const OriginalLanguageFilter = () => {
     { value: "ja", labelKey: "languageOptions.ja" },
     { value: "es", labelKey: "languageOptions.es" },
     { value: "fr", labelKey: "languageOptions.fr" },
+    { value: "de", labelKey: "languageOptions.de" },
+    { value: "zh", labelKey: "languageOptions.zh" },
   ];
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
