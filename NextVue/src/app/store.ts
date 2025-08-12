@@ -15,3 +15,6 @@ export const store = configureStore({
         actor: actorReducer
     },
 })
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

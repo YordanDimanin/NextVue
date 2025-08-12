@@ -16,6 +16,8 @@ import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
 import { setLanguage } from "../app/features/languageSlice";
+import type { RootState } from "../app/store";
+import type { Actor } from "../types";
 
 const DEFAULT_GENRE = "28"; // Action genre as default
 const DEFAULT_FILTER = "popularity.desc";
@@ -29,11 +31,11 @@ const Filter = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const selectedActors = useSelector((state) => state.filter.actors);
+  const selectedActors = useSelector((state: RootState) => state.filter.actors);
 
   const handleClick = async () => {
     try {
-      const actorIds = selectedActors.map(actor => actor.id);
+      const actorIds = selectedActors.map((actor: Actor) => actor.id);
       const movies = await fetchMovies(genre, filter, language, actorIds);
       dispatch(setMovies(movies));
       dispatch(setGenre(genre));
