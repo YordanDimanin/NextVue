@@ -37,12 +37,12 @@ const moviesSlice = createSlice({
     nextMovie: (state) => {
       // Add the current movie to seenMovieIds before moving to the next
       if (state.currentMovieIndex < state.list.length) {
-        state.seenMovieIds.push(state.list[state.currentMovieIndex].id);
+        state.seenMovieIds.push(String(state.list[state.currentMovieIndex].id));
       }
 
       // Find the next unseen movie
       let nextIndex = state.currentMovieIndex + 1;
-      while (nextIndex < state.list.length && state.seenMovieIds.includes(state.list[nextIndex].id)) {
+      while (nextIndex < state.list.length && state.seenMovieIds.includes(String(state.list[nextIndex].id))) {
         nextIndex++;
       }
       state.currentMovieIndex = nextIndex;

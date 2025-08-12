@@ -4,10 +4,27 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 interface LanguageFilterProps {
   language: string;
   setLanguage: (value: string) => void;
+  allowedLanguages?: string[]; // New optional prop
 }
 
-const LanguageFilter = ({ language, setLanguage }: LanguageFilterProps) => {
+const LanguageFilter = ({ language, setLanguage, allowedLanguages }: LanguageFilterProps) => {
   const { t } = useTranslation(); // Initialize useTranslation
+
+  const allLanguages = [
+    { value: "en-US", labelKey: "languageOptions.en-US" },
+    { value: "bg-BG", labelKey: "languageOptions.bg-BG" },
+    { value: "es-ES", labelKey: "languageOptions.es-ES" },
+    { value: "fr-FR", labelKey: "languageOptions.fr-FR" },
+    { value: "de-DE", labelKey: "languageOptions.de-DE" },
+    { value: "it-IT", labelKey: "languageOptions.it-IT" },
+    { value: "ja-JP", labelKey: "languageOptions.ja-JP" },
+    { value: "ko-KR", labelKey: "languageOptions.ko-KR" },
+  ];
+
+  const filteredLanguages = allowedLanguages
+    ? allLanguages.filter(lang => allowedLanguages.includes(lang.value))
+    : allLanguages;
+
   return (
     <div className="relative inline-block">
       <select
@@ -15,14 +32,11 @@ const LanguageFilter = ({ language, setLanguage }: LanguageFilterProps) => {
         onChange={(e) => setLanguage(e.target.value)}
         className="appearance-none sm:text-2xl sm:py-6 mb-4 text-xl py-4 px-11 sm:px-13 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
       >
-        <option value="en-US">{t('languageOptions.en-US')}</option>
-        <option value="bg-BG">{t('languageOptions.bg-BG')}</option>
-        <option value="es-ES">{t('languageOptions.es-ES')}</option>
-        <option value="fr-FR">{t('languageOptions.fr-FR')}</option>
-        <option value="de-DE">{t('languageOptions.de-DE')}</option>
-        <option value="it-IT">{t('languageOptions.it-IT')}</option>
-        <option value="ja-JP">{t('languageOptions.ja-JP')}</option>
-        <option value="ko-KR">{t('languageOptions.ko-KR')}</option>
+        {filteredLanguages.map((lang) => (
+          <option key={lang.value} value={lang.value}>
+            {t(lang.labelKey)}
+          </option>
+        ))}
       </select>
     </div>
   );

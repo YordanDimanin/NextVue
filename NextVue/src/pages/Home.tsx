@@ -28,7 +28,7 @@ const Home = () => {
 
         <div className="mb-6 w-fit text-center">
           <p className="sm:text-xl text-left font-semibold mb-2">{t('home.languageLabel')}</p>
-          <LanguageFilter language={language} setLanguage={handleLanguageChange} />
+          <LanguageFilter language={language} setLanguage={handleLanguageChange} allowedLanguages={['en-US', 'bg-BG']} />
         </div>
 
         <Link to="/filter"><Button className='sm:text-2xl sm:py-6 sm:px-12 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400'>{t('home.findMovie')}</Button></Link>

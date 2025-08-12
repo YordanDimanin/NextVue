@@ -66,14 +66,14 @@
     "western": "Western"
   },
   "languageOptions": {
-    "en-US": "🇺🇸 English (US)",
-    "bg-BG": "🇧🇬 Bulgarian",
-    "es-ES": "🇪🇸 Spanish",
-    "fr-FR": "🇫🇷 French",
-    "de-DE": "🇩🇪 German",
-    "it-IT": "🇮🇹 Italian",
-    "ja-JP": "🇯🇵 Japanese",
-    "ko-KR": "🇰🇷 Korean"
+    "en-US": "English (US)",
+    "bg-BG": "Български",
+    "es-ES": "Español",
+    "fr-FR": "Français",
+    "de-DE": "Deutsch",
+    "it-IT": "Italiano",
+    "ja-JP": "日本語",
+    "ko-KR": "한국어"
   },
   "actorSearch": {
     "placeholder": "Search actors..."
