@@ -64,7 +64,7 @@ const Card = ({ img, title, description, releaseDate, cast }: CardProps) => {
             {cast.length > DISPLAY_LIMIT && (
               <button
                 onClick={() => setShowAllCast(!showAllCast)}
-                className="mt-4 text-lime-400 hover:underline"
+                className="mt-4 text-lime-400 hover:underline active:underline focus:underline text-sm md:text-base"
               >
                 {showAllCast ? "Show less" : "Show full cast"}
               </button>

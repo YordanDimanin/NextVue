@@ -27,6 +27,7 @@ const Filter = () => {
   const [genre, setGenreLocal] = useState<string>(DEFAULT_GENRE);
   const [filter, setFilterLocal] = useState<string>(DEFAULT_FILTER);
   const [language, setLanguageLocal] = useState<string>(DEFAULT_LANGUAGE);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const Filter = () => {
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
 
   const handleClick = async () => {
+    setIsLoading(true);
     try {
       const actorIds = selectedActors.map((actor: Actor) => actor.id);
       const { movies, totalPages } = await fetchMovies(genre, filter, language, actorIds, 1);
@@ -45,6 +47,8 @@ const Filter = () => {
     } catch (error) {
       console.error("Failed to fetch movies:", error);
       // Optionally, show user feedback here
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -79,7 +83,8 @@ const Filter = () => {
 
         <Button
           onClick={handleClick}
-          className="sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400"
+          loading={isLoading}
+          className="sm:text-2xl m-8 sm:py-6 sm:px-10 text-xl py-4 px-8 bg-lime-400 border-2 border-lime-400 text-primary-black rounded-lg font-semibold transition transform duration-300 hover:text-lime-400 hover:bg-primary-light-gray hover:border-2 hover:border-lime-400 active:text-lime-400 active:bg-primary-light-gray active:border-2 active:border-lime-400 focus:text-lime-400 focus:bg-primary-light-gray focus:border-2 focus:border-lime-400"
         >
           Find Movie
         </Button>

@@ -13,7 +13,7 @@ const NavBar: React.FC = () => {
     <>
       <button
         onClick={toggleMenu}
-        className="text-4xl sm:text-5xl border-routed absolute top-4 right-4 transition transform hover:scale-105 hover:shadow-lg duration-300 z-20"
+        className="text-4xl sm:text-5xl p-2 md:p-3 border-routed absolute top-4 right-4 transition transform hover:scale-105 hover:shadow-lg active:scale-105 active:shadow-lg focus:scale-105 focus:shadow-lg duration-300 z-20"
       >
         {isOpen ? <IoClose /> : <HiMenuAlt1 />}
       </button> 

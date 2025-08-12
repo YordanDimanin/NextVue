@@ -78,7 +78,7 @@ const ActorSearch: React.FC = () => {
             {filteredActors.map((actor: Actor) => (
               <div
                 key={actor.id}
-                className="flex items-center p-2 cursor-pointer hover:bg-primary-black"
+                className="flex items-center p-2 cursor-pointer hover:bg-primary-black active:bg-primary-black focus:bg-primary-black"
                 onMouseDown={() => handleActorSelect(actor)}
               >
                 {actor.profile_path ? (
@@ -119,7 +119,7 @@ const ActorSearch: React.FC = () => {
             <span>{actor.name}</span>
             <button
               onClick={() => handleRemoveActor(actor.id)}
-              className="ml-2 p-1 rounded-full hover:bg-lime-400 transition-colors duration-200"
+              className="ml-2 p-1 rounded-full hover:bg-lime-400 active:bg-lime-400 focus:bg-lime-400 transition-colors duration-200 text-sm md:text-base"
             >
               &times;
             </button>
