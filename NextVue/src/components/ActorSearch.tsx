@@ -79,7 +79,7 @@ const ActorSearch: React.FC = () => {
               <div
                 key={actor.id}
                 className="flex items-center p-2 cursor-pointer hover:bg-primary-black"
-                onClick={() => handleActorSelect(actor)}
+                onMouseDown={() => handleActorSelect(actor)}
               >
                 {actor.profile_path ? (
                   <img

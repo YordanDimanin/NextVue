@@ -4,7 +4,7 @@ import axios from 'axios';
 interface Actor {
   id: number;
   name: string;
-  profile_path: string;
+  profile_path: string | null;
 }
 
 interface ActorState {
