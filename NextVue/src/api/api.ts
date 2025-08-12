@@ -5,34 +5,29 @@ export const fetchMovies = async (
   genreId: string,
   sortBy: string,
   language: string = "en-US",
-  actorIds: number[] = []
+  actorIds: number[] = [],
+  page: number = 1
 ) => {
   const today = new Date().toISOString().split("T")[0];
-  let allResults: Movie[] = [];
 
-  for (let page = 1; page <= 10; page++) {
-    const params: Params = {
-      api_key: import.meta.env.VITE_TMDB_API_KEY,
-      with_genres: genreId,
-      sort_by: sortBy,
-      "release_date.lte": today,
-      language,
-      page,
-    };
+  const params: Params = {
+    api_key: import.meta.env.VITE_TMDB_API_KEY,
+    with_genres: genreId,
+    sort_by: sortBy,
+    "release_date.lte": today,
+    language,
+    page,
+  };
 
-    if (actorIds.length > 0) {
-      params.with_people = actorIds.join(",");
-    }
-
-    const res = await axios.get("https://api.themoviedb.org/3/discover/movie", {
-      params,
-    });
-
-    allResults = [...allResults, ...res.data.results];
+  if (actorIds.length > 0) {
+    params.with_people = actorIds.join(",");
   }
 
-  // Filter out movies missing title or overview in selected language
-  let filteredResults = allResults.filter(
+  const res = await axios.get("https://api.themoviedb.org/3/discover/movie", {
+    params,
+  });
+
+  let filteredResults: Movie[] = res.data.results.filter(
     (movie: Movie) =>
       movie.title &&
       movie.overview &&
@@ -55,7 +50,10 @@ export const fetchMovies = async (
     filteredResults = moviesWithAllActors;
   }
 
-  return filteredResults;
+  return {
+    movies: filteredResults,
+    totalPages: res.data.total_pages,
+  };
 };
 
 export const fetchMovieDetailsWithCast = async (movieId: number) => {
