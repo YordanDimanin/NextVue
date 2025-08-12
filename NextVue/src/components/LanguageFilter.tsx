@@ -1,25 +1,37 @@
 // LanguageFilter.tsx
-interface LanguageFilterProps {
-  language: string;
-  setLanguage: (value: string) => void;
-}
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLanguage } from '../app/features/languageSlice';
+import type { RootState } from '../app/store'; // Import RootState
 
-const LanguageFilter = ({ language, setLanguage }: LanguageFilterProps) => {
+const LanguageFilter = () => {
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
+  const currentLanguage = useSelector((state: RootState) => state.language.language);
+
+  const allowedLanguages = [
+    { value: "en", labelKey: "languageOptions.en" },
+    { value: "bg", labelKey: "languageOptions.bg" },
+  ];
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLanguage = e.target.value;
+    dispatch(setLanguage(newLanguage));
+    i18n.changeLanguage(newLanguage); // Explicitly change i18n language
+  };
+
   return (
     <div className="relative inline-block">
       <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value)}
-        className="appearance-none sm:text-2xl sm:py-6 mb-4 text-xl py-4 px-11 sm:px-13 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
+        value={currentLanguage}
+        onChange={handleLanguageChange}
+        className="appearance-none sm:text-2xl sm:py-6 mb-4 text-xl py-4 px-11 sm:px-13 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor:pointer focus:ring-0 focus:border-none"
       >
-        <option value="en-US">🇺🇸 English (US)</option>
-        <option value="bg-BG">🇧🇬 Bulgarian</option>
-        <option value="es-ES">🇪🇸 Spanish</option>
-        <option value="fr-FR">🇫🇷 French</option>
-        <option value="de-DE">🇩🇪 German</option>
-        <option value="it-IT">🇮🇹 Italian</option>
-        <option value="ja-JP">🇯🇵 Japanese</option>
-        <option value="ko-KR">🇰🇷 Korean</option>
+        {allowedLanguages.map((lang) => (
+          <option key={lang.value} value={lang.value}>
+            {t(lang.labelKey)}
+          </option>
+        ))}
       </select>
     </div>
   );

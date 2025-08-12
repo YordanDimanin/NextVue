@@ -1,0 +1,76 @@
+{
+  "home": {
+    "welcome": "Добре дошли в ",
+    "appName": "NextVue",
+    "description": "NextVue е вашият личен филмов спътник — помага ви да откривате страхотни филми въз основа на любимите си жанжове.",
+    "findMovie": "Намери филм",
+    "languageLabel": "Език"
+  },
+  "navbar": {
+    "home": "Начало",
+    "filter": "Филтър"
+  },
+  "footer": {
+    "disclaimer": "Този продукт използва TMDb API, но не е одобрен или сертифициран от TMDb."
+  },
+  "filterPage": {
+    "selectMovie": "Изберете филм",
+    "filters": "Филтри",
+    "actors": "Актьори",
+    "filterBy": "Филтриране по",
+    "genre": "Жанр",
+    "language": "Език",
+    "filmType": "Тип филм",
+    "findMovie": "Намери филм",
+    "loading": "Зареждане..."
+  },
+  "resultPage": {
+    "movie": "Филм",
+    "recommendation": "препоръка",
+    "noMoviesFound": "Няма намерени филми, отговарящи на вашите филтри. Моля, опитайте с други селекции.",
+    "noMoreMovies": "Няма повече филми за зареждане. Моля, коригирайте избора си.",
+    "recommendAnotherMovie": "Препоръчайте друг филм",
+    "loading": "Зареждане...",
+    "releaseDate": "Дата на издаване:",
+    "cast": "Актьорски състав:",
+    "showLess": "Покажи по-малко",
+    "showFullCast": "Покажи целия актьорски състав",
+    "noImage": "Няма изображение",
+    "noImg": "Няма изображение"
+  },
+  "filterByOptions": {
+    "mostPopular": "Най-популярни",
+    "highestRated": "Най-високо оценени",
+    "newest": "Най-нови",
+    "oldest": "Най-стари",
+    "mostVoted": "Най-гласувани"
+  },
+  "genreOptions": {
+    "action": "Екшън",
+    "adventure": "Приключенски",
+    "animation": "Анимация",
+    "comedy": "Комедия",
+    "crime": "Криминален",
+    "documentary": "Документален",
+    "drama": "Драма",
+    "family": "Семеен",
+    "fantasy": "Фентъзи",
+    "history": "Исторически",
+    "horror": "Ужаси",
+    "music": "Музикален",
+    "mystery": "Мистерия",
+    "romance": "Романтичен",
+    "scienceFiction": "Научна фантастика",
+    "tvMovie": "ТВ филм",
+    "thriller": "Трилър",
+    "war": "Военен",
+    "western": "Уестърн"
+  },
+  "languageOptions": {
+    "en": "Английски",
+    "bg": "Български",
+    "ja": "Японски",
+    "es": "Испански",
+    "fr": "Френски"
+  }
+}

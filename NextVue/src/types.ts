@@ -17,8 +17,9 @@ export interface Params {
   api_key: string;
   with_genres: string;
   sort_by: string;
-  "release_date.lte": string;
-  language: string;
+  "primary_release_date.lte"?: string;
+  language?: string;
   page: number;
   with_people?: string; // Optional, as it's only added if actorIds.length > 0
+  with_original_language?: string; // New optional property
 }

@@ -1,67 +1,64 @@
 import axios from "axios";
-import type { Movie, Params } from '../types';
+import type { Params } from '../types';
 
 export const fetchMovies = async (
   genreId: string,
   sortBy: string,
-  language: string = "en-US",
+  displayLanguage: string = "en-US",
   actorIds: number[] = [],
-  page: number = 1
+  page: number = 1,
+  originalLanguage?: string // New optional parameter
 ) => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(today.getDate()).padStart(2, '0');
+  const formattedToday = `${year}-${month}-${day}`;
 
   const params: Params = {
     api_key: import.meta.env.VITE_TMDB_API_KEY,
     with_genres: genreId,
     sort_by: sortBy,
-    "release_date.lte": today,
-    language,
+    language: displayLanguage, // Use displayLanguage here
     page,
+    'primary_release_date.lte': formattedToday, // Only movies released on or before today
   };
 
   if (actorIds.length > 0) {
     params.with_people = actorIds.join(",");
   }
 
+  if (originalLanguage) {
+    params.with_original_language = originalLanguage;
+  }
+
+  if (actorIds.length > 0) {
+    params.with_people = actorIds.join(",");
+  }
+
+  console.log('TMDB API Request - params:', params);
+  console.log('TMDB API Request - displayLanguage:', displayLanguage);
+  console.log('TMDB API Request - originalLanguage:', originalLanguage);
+
   const res = await axios.get("https://api.themoviedb.org/3/discover/movie", {
     params,
   });
 
-  let filteredResults: Movie[] = res.data.results.filter(
-    (movie: Movie) =>
-      movie.title &&
-      movie.overview &&
-      movie.title.trim() !== "" &&
-      movie.overview.trim() !== ""
-  );
-
-  if (actorIds.length > 0) {
-    const moviesWithAllActors: Movie[] = [];
-    for (const movie of filteredResults) {
-      const { cast } = await fetchMovieDetailsWithCast(movie.id);
-      const castIds = cast.map((actor: any) => actor.id);
-      const hasAllActors = actorIds.every((actorId) =>
-        castIds.includes(actorId)
-      );
-      if (hasAllActors) {
-        moviesWithAllActors.push(movie);
-      }
-    }
-    filteredResults = moviesWithAllActors;
-  }
-
+  console.log('TMDB API Response - total_results:', res.data.total_results);
   return {
-    movies: filteredResults,
+    movies: res.data.results,
     totalPages: res.data.total_pages,
+    totalResults: res.data.total_results,
   };
 };
 
-export const fetchMovieDetailsWithCast = async (movieId: number) => {
+export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {
   const movieDetailsRes = await axios.get(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       params: {
         api_key: import.meta.env.VITE_TMDB_API_KEY,
+        language: language,
       },
     }
   );
@@ -71,6 +68,7 @@ export const fetchMovieDetailsWithCast = async (movieId: number) => {
     {
       params: {
         api_key: import.meta.env.VITE_TMDB_API_KEY,
+        language: language, // Add language to credits request as well
       },
     }
   );
