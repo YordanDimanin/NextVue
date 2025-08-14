@@ -85,8 +85,7 @@ const Filter = () => {
           <Genre genre={genre} setGenre={setGenreLocal} />
         </div>
 
-        <div className="mb-6 w-fit text-center">
-          <p className="sm:text-xl text-left font-semibold mb-2">{t('filterPage.filmType')}</p>
+        <div className="mb-6 w-fit text-left">
           <OriginalLanguageFilter />
         </div>
 

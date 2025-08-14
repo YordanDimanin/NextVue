@@ -20,9 +20,10 @@
     "filterBy": "Filter By",
     "genre": "Genre",
     "language": "Language",
-    "filmType": "Film Type",
+    
     "findMovie": "Find Movie",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "originalMovieLanguage": "Original Movie Language"
   },
   "resultPage": {
     "movie": "Movie",
@@ -78,5 +79,40 @@
   },
   "actorSearch": {
     "placeholder": "Search actors..."
+  },
+  "filters": {
+    
+  },
+  "originalLanguages": {
+    "all": "All",
+    "ar": "Arabic",
+    "bg": "Bulgarian",
+    "bn": "Bengali",
+    "ca": "Catalan",
+    "cs": "Czech",
+    "de": "German",
+    "el": "Greek",
+    "en": "English",
+    "es": "Spanish",
+    "fa": "Persian",
+    "fi": "Finnish",
+    "fr": "French",
+    "he": "Hebrew",
+    "hi": "Hindi",
+    "hu": "Hungarian",
+    "id": "Indonesian",
+    "it": "Italian",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "nl": "Dutch",
+    "pl": "Polish",
+    "pt": "Portuguese",
+    "ru": "Russian",
+    "sv": "Swedish",
+    "th": "Thai",
+    "tr": "Turkish",
+    "uk": "Ukrainian",
+    "vi": "Vietnamese",
+    "zh": "Chinese"
   }
 }
