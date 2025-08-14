@@ -111,7 +111,7 @@ const OriginalLanguageFilter: React.FC = () => {
         id="originalLanguage"
         value={movieLanguage}
         onChange={(e) => dispatch(setMovieLanguage(e.target.value))}
-        className="bg-[#2a2f3a] text-white w-full p-2 rounded border border-gray-700 focus:outline-none focus:ring-2 focus:ring-lime-400"
+        className="appearance-none sm:text-2xl sm:py-6 text-xl py-4 px-10 sm:px-11 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
         aria-label={t("filterPage.originalMovieLanguage")}
       >
         <option value="">{t("originalLanguages.all")}</option>
