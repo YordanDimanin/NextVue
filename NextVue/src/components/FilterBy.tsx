@@ -16,9 +16,6 @@ const FilterBy = ({ filter, setFilter }: FilterByProps) => {
         className="appearance-none sm:text-2xl sm:py-6 mb-4 text-xl py-4 px-11 sm:px-13 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
       >
         <option value="popularity.desc">{t('filterByOptions.mostPopular')}</option>
-        <option value="vote_average.desc">{t('filterByOptions.highestRated')}</option>
-        <option value="release_date.desc">{t('filterByOptions.newest')}</option>
-        <option value="release_date.asc">{t('filterByOptions.oldest')}</option>
         <option value="vote_count.desc">{t('filterByOptions.mostVoted')}</option>
       </select>
     </div>
