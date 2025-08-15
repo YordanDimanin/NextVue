@@ -1,14 +1,15 @@
 import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import NavBar from "../components/NavBar";
 import Genre from "../components/Genre";
 import FilterBy from "../components/FilterBy";
 import OriginalLanguageFilter from "../components/OriginalLanguageFilter";
+import TranslationFilter from "../components/TranslationFilter";
 import Button from "../components/Button";
 import Footer from "../components/Footer";
-
 import ActorSearch from "../components/ActorSearch";
 
 import { fetchMovies } from "../api/api";
@@ -17,9 +18,8 @@ import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
 import type { RootState } from "../app/store";
 import type { Actor } from "../types";
-import { useTranslation } from 'react-i18next'; // Import useTranslation
 
-const DEFAULT_GENRE = "28"; // Action genre as default
+const DEFAULT_GENRE = "28";
 const DEFAULT_FILTER = "popularity.desc";
 
 const Filter = () => {
@@ -29,37 +29,40 @@ const Filter = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { i18n, t } = useTranslation();
+  const currentLanguage = i18n.language || 'en';
 
   const selectedActors = useSelector((state: RootState) => state.filter.actors);
-  const language = useSelector((state: RootState) => state.language.language); // Get language from Redux store
-  const movieLanguage = useSelector((state: RootState) => state.filter.movieLanguage); // Get movie language from Redux store
+  const movieLanguage = useSelector((state: RootState) => state.filter.movieLanguage);
+  const translationMode = useSelector((state: RootState) => state.filter.translationMode);
 
   const fetchMoviesData = useCallback(async () => {
     setIsLoading(true);
     try {
       const actorIds = selectedActors.map((actor: Actor) => actor.id);
-      // Pass language as both displayLanguage and originalLanguage
-      const { movies, totalPages, totalResults } = await fetchMovies(genre, filter, language, actorIds, 1, movieLanguage);
+      const { movies, totalPages, totalResults } = await fetchMovies({
+        genre,
+        filter,
+        uiLanguage: currentLanguage,
+        actorIds,
+        page: 1,
+        movieLanguage: movieLanguage,
+        translatedOnly: translationMode === 'translated',
+      });
       dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
     } catch (error) {
       console.error("Failed to fetch movies:", error);
-      // Optionally, show user feedback here
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch, selectedActors, genre, filter, language, movieLanguage]); // Add language to dependencies
+  }, [dispatch, selectedActors, genre, filter, currentLanguage, movieLanguage, translationMode]);
 
   const handleClick = async () => {
     await fetchMoviesData();
     navigate("/result");
   };
-
-  // useEffect(() => {
-  //   fetchMoviesData();
-  // }, [genre, filter, selectedActors, language, movieLanguage, fetchMoviesData]); // Change i18n.language to language in dependencies
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -85,9 +88,9 @@ const Filter = () => {
           <Genre genre={genre} setGenre={setGenreLocal} />
         </div>
 
-        <div className="mb-6 w-fit text-left">
-          <OriginalLanguageFilter />
-        </div>
+        <OriginalLanguageFilter />
+
+        <TranslationFilter />
 
         <Button
           onClick={handleClick}

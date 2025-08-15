@@ -3,8 +3,9 @@ import genreReducer from './features/genreSlice'
 import filterReducer from './features/filterSlice'
 import moviesReducer from './features/movieSlice'
 import languageReducer from './features/languageSlice'
-
 import actorReducer from './features/actorSlice'
+
+
 
 export const store = configureStore({
     reducer: {
@@ -12,7 +13,7 @@ export const store = configureStore({
         filter: filterReducer,
         movies: moviesReducer,
         language: languageReducer,
-        actor: actorReducer
+        actor: actorReducer,
     },
 })
 
