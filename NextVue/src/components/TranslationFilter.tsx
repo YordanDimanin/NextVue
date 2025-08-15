@@ -15,13 +15,13 @@ const TranslationFilter = () => {
 
   return (
     <div className="mb-6 text-center w-fit">
-      <p className="sm:text-xl font-semibold mb-2 text-left">
+      <p className="sm:text-xl font-semibold mt-6 mb-2 text-left">
         {t('translationFilter.title')}
       </p>
       <select
         value={translationMode}
         onChange={handleChange}
-        className="appearance-none sm:text-2xl sm:py-6 text-xl py-4 px-10 sm:px-11 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
+        className=" appearance-none sm:text-2xl sm:py-6 text-xl py-4 px-10 sm:px-11 text-center bg-slate-700 border-none text-primary-white rounded-lg font-semibold w-full focus:outline-none cursor-pointer focus:ring-0 focus:border-none"
       >
         <option value="translated">
           {t('translationFilter.translatedOnly')}
