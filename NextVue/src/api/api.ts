@@ -1,76 +1,82 @@
 import axios from 'axios';
-import type { Movie, FetchMoviesParams } from '../types';
+import type { Movie } from '../types';
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const TMDB_BASE = 'https://api.themoviedb.org/3';
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 
-export const fetchFilteredMovies = async ({
-  uiLanguage,
-  originalLang,
-  genre,
-  translatedOnly = false,
-  filterBy = 'popularity.desc',
-  page = 1
-}: FetchMoviesParams): Promise<{ movies: Movie[]; totalPages: number; totalResults: number }> => {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+export async function searchActor(name: string) {
+  const res = await axios.get(`${BASE_URL}/search/person?api_key=${API_KEY}&query=${encodeURIComponent(name)}`);
+  return res.data.results; // array of actors
+}
 
-  // Construct query params
-  const params: any = {
-    api_key: TMDB_API_KEY,
-    language: uiLanguage,       // for translated titles
-    sort_by: filterBy,
-    page,
-    'release_date.lte': today,  // exclude upcoming movies
-  };
+interface DiscoverMoviesOptions {
+  castId?: number;
+  genreIds?: number[];
+  originalLanguage?: string; // "all" = ignore
+  translatedOnly?: boolean;
+  sortBy?: string;
+  page?: number; // Added page parameter
+  uiLanguage?: string;
+}
 
-  if (originalLang && originalLang !== 'all') {
-    params.with_original_language = originalLang;
+export async function discoverMovies({
+  castId,
+  genreIds,
+  originalLanguage,
+  translatedOnly,
+  sortBy = 'popularity.desc',
+  page = 1, // Default page to 1
+  uiLanguage = 'en-US',
+}: DiscoverMoviesOptions) {
+  const params = new URLSearchParams({
+    api_key: API_KEY,
+    sort_by: sortBy,
+    page: page.toString(), // Ensure page is a string
+    'release_date.lte': new Date().toISOString().split('T')[0], // only released
+    language: uiLanguage,
+  });
+
+  if (castId) params.append('with_cast', castId.toString());
+  if (genreIds?.length) params.append('with_genres', genreIds.join(','));
+  // Only append original_language if it's not "all"
+  if (originalLanguage && originalLanguage !== 'all') {
+    params.append('with_original_language', originalLanguage);
   }
 
-  if (genre) {
-    params.with_genres = genre;
-  }
+  const res = await axios.get(`${BASE_URL}/discover/movie?${params.toString()}`);
+  const data = res.data;
 
-  // For highest rated filter, ensure a minimum number of votes
-  if (filterBy === 'vote_average.desc') {
-    params['vote_count.gte'] = 10;
-  }
+  let results = data.results;
 
-  const response = await axios.get(`${TMDB_BASE}/discover/movie`, { params });
-  const data = response.data;
-
-  let movies: Movie[] = data.results;
-
-  // Filter client-side for translated-only movies
-  if (translatedOnly) {
-    movies = movies.filter(m => m.title !== m.original_title);
+  // Only include translated movies if required and originalLanguage is not "all"
+  if (translatedOnly && originalLanguage && originalLanguage !== 'all') {
+    results = results.filter((movie: Movie) => movie.original_language !== originalLanguage);
   }
 
   return {
-    movies: movies,
+    results,
     totalPages: data.total_pages,
-    totalResults: data.total_results
   };
-};
+}
 
 export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {
-  const tmdbLang = language.split('-')[0]; // Normalize to 2-letter code
+  const tmdbLang = language.split('-')[0];
   const movieDetailsRes = await axios.get(
-    `https://api.themoviedb.org/3/movie/${movieId}`,
+    `${BASE_URL}/movie/${movieId}`,
     {
       params: {
-        api_key: TMDB_API_KEY,
-        language: tmdbLang, // Use normalized language
+        api_key: API_KEY,
+        language: tmdbLang,
       },
     }
   );
 
   const movieCreditsRes = await axios.get(
-    `https://api.themoviedb.org/3/movie/${movieId}/credits`,
+    `${BASE_URL}/movie/${movieId}/credits`,
     {
       params: {
-        api_key: TMDB_API_KEY,
-        language: tmdbLang, // Use normalized language
+        api_key: API_KEY,
+        language: tmdbLang,
       },
     }
   );

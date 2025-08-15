@@ -12,7 +12,7 @@ import Button from "../components/Button";
 import Footer from "../components/Footer";
 import ActorSearch from "../components/ActorSearch";
 
-import { fetchFilteredMovies } from "../api/api";
+import { searchActor, discoverMovies } from "../api/api";
 import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
@@ -38,15 +38,25 @@ const Filter = () => {
   const fetchMoviesData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { movies, totalPages, totalResults } = await fetchFilteredMovies({
-        genre,
-        filterBy: filter, // Renamed from filter to filterBy
+      let actorId: number | undefined;
+      if (selectedActors && selectedActors.length > 0) {
+        const actors = await searchActor(selectedActors[0].name);
+        if (actors.length > 0) {
+          actorId = actors[0].id;
+        }
+      }
+
+      const { results, totalPages } = await discoverMovies({
+        castId: actorId,
+        genreIds: genre ? [parseInt(genre)] : undefined,
+        sortBy: filter,
         uiLanguage: currentLanguage,
-        page: 1,
-        originalLang: movieLanguage, // Renamed from movieLanguage to originalLang
+        originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
         translatedOnly: translationMode === 'translated',
+        page: 1, // Always fetch first page initially
       });
-      dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
+
+      dispatch(setMovies({ movies: results, totalPages: totalPages, page: 1, totalResults: results.length })); // Pass totalPages
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
     } catch (error) {
