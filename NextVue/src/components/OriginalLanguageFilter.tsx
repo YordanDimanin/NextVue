@@ -60,8 +60,8 @@ const OriginalLanguageFilter: React.FC = () => {
           { params: { api_key: import.meta.env.VITE_TMDB_API_KEY } }
         );
         const langsSorted = response.data.sort((a: Language, b: Language) => {
-          const nameA = t(`originalLanguages.${a.iso_639_1}`) || a.english_name || a.name;
-          const nameB = t(`originalLanguages.${b.iso_639_1}`) || b.english_name || b.name;
+          const nameA = t(`originalLanguages.${a.iso_639_1}`, { defaultValue: a.english_name || a.name });
+          const nameB = t(`originalLanguages.${b.iso_639_1}`, { defaultValue: b.english_name || b.name });
           return nameA.localeCompare(nameB);
         });
         setLanguages(langsSorted);
@@ -70,7 +70,7 @@ const OriginalLanguageFilter: React.FC = () => {
       }
     };
     fetchLanguages();
-  }, [t]);
+  }, [t, i18n.language]);
 
   return (
     <div className="w-fit text-left relative">
