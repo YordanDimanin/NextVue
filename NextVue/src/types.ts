@@ -10,15 +10,15 @@ export interface Movie {
   overview: string;
   poster_path: string | null;
   release_date: string;
+  original_title: string;
   // Add other properties as needed based on TMDB API response
 }
 
 export interface FetchMoviesParams {
-  genre?: string;
-  filter?: string;
-  uiLanguage: string; // Selected UI language
-  actorIds?: number[];
+  uiLanguage: string;        // e.g., 'bg' or 'en'
+  originalLang?: string;      // e.g., 'ar' or 'all'
+  genre?: string;            // e.g., '35' for comedy
+  translatedOnly?: boolean;  // show only movies translated to UI language
+  filterBy?: string;         // e.g., 'popularity.desc', 'vote_average.desc', etc.
   page?: number;
-  movieLanguage?: string; // Original language filter, e.g., 'ar'
-  translatedOnly?: boolean; // Whether to filter only translated movies
 }

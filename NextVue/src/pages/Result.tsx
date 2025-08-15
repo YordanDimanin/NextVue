@@ -5,7 +5,7 @@ import Footer from "../components/Footer"
 
 import { useEffect, useState, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { fetchMovieDetailsWithCast, fetchMovies } from "../api/api"
+import { fetchMovieDetailsWithCast, fetchFilteredMovies } from "../api/api"
 import { nextMovie, setMovies } from "../app/features/movieSlice";
 import type { RootState } from "../app/store";
 import type { Actor, Movie } from "../types";
@@ -28,14 +28,12 @@ const Result = () => {
   const fetchMoviesInitial = useCallback(async () => {
     setIsLoading(true);
     try {
-      const actorIds = selectedActors.map((actor: Actor) => actor.id);
-      const { movies, totalPages, totalResults } = await fetchMovies({
+      const { movies, totalPages, totalResults } = await fetchFilteredMovies({
         genre,
-        filter,
+        filterBy: filter,
         uiLanguage: currentLanguage,
-        actorIds,
         page: 1,
-        movieLanguage: movieLanguage,
+        originalLang: movieLanguage,
         translatedOnly: translationMode === 'translated',
       });
       dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
@@ -54,19 +52,17 @@ const Result = () => {
     const pagesToFetch = 5; // Fetch 5 pages at a time
     let allNewMovies: Movie[] = [];
     let newCurrentPage = currentPage;
-    const actorIds = selectedActors.map((actor: Actor) => actor.id);
 
     for (let i = 0; i < pagesToFetch; i++) {
       if (newCurrentPage + 1 <= totalPages) {
         setIsLoading(true);
         try {
-          const { movies: fetchedMovies } = await fetchMovies({
+          const { movies: fetchedMovies } = await fetchFilteredMovies({
             genre,
-            filter,
+            filterBy: filter,
             uiLanguage: currentLanguage,
-            actorIds,
             page: newCurrentPage + 1,
-            movieLanguage: movieLanguage,
+            originalLang: movieLanguage,
             translatedOnly: translationMode === 'translated',
           });
           

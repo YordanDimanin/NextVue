@@ -4,58 +4,53 @@ import type { Movie, FetchMoviesParams } from '../types';
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const TMDB_BASE = 'https://api.themoviedb.org/3';
 
-export const fetchMovies = async ({
-  genre,
-  filter,
+export const fetchFilteredMovies = async ({
   uiLanguage,
-  actorIds = [],
-  page = 1,
-  movieLanguage,
+  originalLang,
+  genre,
   translatedOnly = false,
+  filterBy = 'popularity.desc',
+  page = 1
 }: FetchMoviesParams): Promise<{ movies: Movie[]; totalPages: number; totalResults: number }> => {
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-  // 1️⃣ Fetch movies by original language and other filters
+  // Construct query params
   const params: any = {
     api_key: TMDB_API_KEY,
-    language: uiLanguage, // The UI language to return translated fields
-    sort_by: filter || 'popularity.desc',
+    language: uiLanguage,       // for translated titles
+    sort_by: filterBy,
     page,
-    with_original_language: movieLanguage, // Original language filter
-    with_genres: genre || undefined,
-    with_cast: actorIds.length > 0 ? actorIds.join(',') : undefined,
+    'release_date.lte': today,  // exclude upcoming movies
   };
 
-  const response = await axios.get(`${TMDB_BASE}/discover/movie`, { params });
-  let movies: Movie[] = response.data.results;
-  const totalPages = response.data.total_pages;
-  const totalResults = response.data.total_results;
-
-  // 2️⃣ Filter movies that are translated to UI language
-  if (translatedOnly) {
-    const langCode = uiLanguage.split('-')[0].toLowerCase(); // e.g., 'en', 'bg'
-
-    const translatedMovies: Movie[] = [];
-
-    for (const movie of movies) {
-      try {
-        const transRes = await axios.get(`${TMDB_BASE}/movie/${movie.id}/translations`, {
-          params: { api_key: TMDB_API_KEY },
-        });
-
-        const hasTranslation = transRes.data.translations.some(
-          (t: any) => t.iso_639_1.toLowerCase() === langCode
-        );
-
-        if (hasTranslation) translatedMovies.push(movie);
-      } catch (err) {
-        console.error(`Failed to fetch translations for movie ${movie.id}`, err);
-      }
-    }
-
-    movies = translatedMovies;
+  if (originalLang && originalLang !== 'all') {
+    params.with_original_language = originalLang;
   }
 
-  return { movies, totalPages, totalResults };
+  if (genre) {
+    params.with_genres = genre;
+  }
+
+  // For highest rated filter, ensure a minimum number of votes
+  if (filterBy === 'vote_average.desc') {
+    params['vote_count.gte'] = 10;
+  }
+
+  const response = await axios.get(`${TMDB_BASE}/discover/movie`, { params });
+  const data = response.data;
+
+  let movies: Movie[] = data.results;
+
+  // Filter client-side for translated-only movies
+  if (translatedOnly) {
+    movies = movies.filter(m => m.title !== m.original_title);
+  }
+
+  return {
+    movies: movies,
+    totalPages: data.total_pages,
+    totalResults: data.total_results
+  };
 };
 
 export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {

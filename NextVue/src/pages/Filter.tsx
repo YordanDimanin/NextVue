@@ -12,12 +12,11 @@ import Button from "../components/Button";
 import Footer from "../components/Footer";
 import ActorSearch from "../components/ActorSearch";
 
-import { fetchMovies } from "../api/api";
+import { fetchFilteredMovies } from "../api/api";
 import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
 import type { RootState } from "../app/store";
-import type { Actor } from "../types";
 
 const DEFAULT_GENRE = "28";
 const DEFAULT_FILTER = "popularity.desc";
@@ -39,14 +38,12 @@ const Filter = () => {
   const fetchMoviesData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const actorIds = selectedActors.map((actor: Actor) => actor.id);
-      const { movies, totalPages, totalResults } = await fetchMovies({
+      const { movies, totalPages, totalResults } = await fetchFilteredMovies({
         genre,
-        filter,
+        filterBy: filter, // Renamed from filter to filterBy
         uiLanguage: currentLanguage,
-        actorIds,
         page: 1,
-        movieLanguage: movieLanguage,
+        originalLang: movieLanguage, // Renamed from movieLanguage to originalLang
         translatedOnly: translationMode === 'translated',
       });
       dispatch(setMovies({ movies, totalPages, page: 1, totalResults }));
