@@ -139,7 +139,12 @@ const Result = () => {
           <span className='text-lime-400'>{t('resultPage.movie')}</span> {t('resultPage.recommendation')}
         </h1>
 
-        {totalResults === 0 && (
+        {totalResults === 0 && translationMode === 'translated' && (
+          <p className="text-primary-white text-center text-xl mb-4">
+            {t('resultPage.noTranslatedMoviesFound')}
+          </p>
+        )}
+        {totalResults === 0 && translationMode !== 'translated' && (
           <p className="text-primary-white text-center text-xl mb-4">
             {t('resultPage.noMoviesFound')}
           </p>

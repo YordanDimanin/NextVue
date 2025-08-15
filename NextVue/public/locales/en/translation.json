@@ -37,7 +37,8 @@
     "showLess": "Show less",
     "showFullCast": "Show full cast",
     "noImage": "No Image",
-    "noImg": "No Img"
+    "noImg": "No Img",
+    "noTranslatedMoviesFound": "No translated movies found matching your filters. Please try different selections."
   },
   "filterByOptions": {
     "mostPopular": "Most Popular",
