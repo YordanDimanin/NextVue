@@ -1,64 +1,71 @@
-import axios from "axios";
-import type { Params } from '../types';
+import axios from 'axios';
+import type { Movie, FetchMoviesParams } from '../types';
 
-export const fetchMovies = async (
-  genreId: string,
-  sortBy: string,
-  displayLanguage: string = "en-US",
-  actorIds: number[] = [],
-  page: number = 1,
-  originalLanguage?: string // New optional parameter
-) => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-  const day = String(today.getDate()).padStart(2, '0');
-  const formattedToday = `${year}-${month}-${day}`;
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const TMDB_BASE = 'https://api.themoviedb.org/3';
 
-  const params: Params = {
-    api_key: import.meta.env.VITE_TMDB_API_KEY,
-    with_genres: genreId,
-    sort_by: sortBy,
-    language: displayLanguage, // Use displayLanguage here
+export const fetchMovies = async ({
+  genre,
+  filter,
+  uiLanguage,
+  actorIds = [],
+  page = 1,
+  movieLanguage,
+  translatedOnly = false,
+}: FetchMoviesParams): Promise<{ movies: Movie[]; totalPages: number; totalResults: number }> => {
+
+  // 1️⃣ Fetch movies by original language and other filters
+  const params: any = {
+    api_key: TMDB_API_KEY,
+    language: uiLanguage, // The UI language to return translated fields
+    sort_by: filter || 'popularity.desc',
     page,
-    'primary_release_date.lte': formattedToday, // Only movies released on or before today
+    with_original_language: movieLanguage, // Original language filter
+    with_genres: genre || undefined,
+    with_cast: actorIds.length > 0 ? actorIds.join(',') : undefined,
   };
 
-  if (actorIds.length > 0) {
-    params.with_people = actorIds.join(",");
+  const response = await axios.get(`${TMDB_BASE}/discover/movie`, { params });
+  let movies: Movie[] = response.data.results;
+  const totalPages = response.data.total_pages;
+  const totalResults = response.data.total_results;
+
+  // 2️⃣ Filter movies that are translated to UI language
+  if (translatedOnly) {
+    const langCode = uiLanguage.split('-')[0].toLowerCase(); // e.g., 'en', 'bg'
+
+    const translatedMovies: Movie[] = [];
+
+    for (const movie of movies) {
+      try {
+        const transRes = await axios.get(`${TMDB_BASE}/movie/${movie.id}/translations`, {
+          params: { api_key: TMDB_API_KEY },
+        });
+
+        const hasTranslation = transRes.data.translations.some(
+          (t: any) => t.iso_639_1.toLowerCase() === langCode
+        );
+
+        if (hasTranslation) translatedMovies.push(movie);
+      } catch (err) {
+        console.error(`Failed to fetch translations for movie ${movie.id}`, err);
+      }
+    }
+
+    movies = translatedMovies;
   }
 
-  if (originalLanguage) {
-    params.with_original_language = originalLanguage;
-  }
-
-  if (actorIds.length > 0) {
-    params.with_people = actorIds.join(",");
-  }
-
-  console.log('TMDB API Request - params:', params);
-  console.log('TMDB API Request - displayLanguage:', displayLanguage);
-  console.log('TMDB API Request - originalLanguage:', originalLanguage);
-
-  const res = await axios.get("https://api.themoviedb.org/3/discover/movie", {
-    params,
-  });
-
-  console.log('TMDB API Response - total_results:', res.data.total_results);
-  return {
-    movies: res.data.results,
-    totalPages: res.data.total_pages,
-    totalResults: res.data.total_results,
-  };
+  return { movies, totalPages, totalResults };
 };
 
 export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {
+  const tmdbLang = language.split('-')[0]; // Normalize to 2-letter code
   const movieDetailsRes = await axios.get(
     `https://api.themoviedb.org/3/movie/${movieId}`,
     {
       params: {
-        api_key: import.meta.env.VITE_TMDB_API_KEY,
-        language: language,
+        api_key: TMDB_API_KEY,
+        language: tmdbLang, // Use normalized language
       },
     }
   );
@@ -67,8 +74,8 @@ export const fetchMovieDetailsWithCast = async (movieId: number, language: strin
     `https://api.themoviedb.org/3/movie/${movieId}/credits`,
     {
       params: {
-        api_key: import.meta.env.VITE_TMDB_API_KEY,
-        language: language, // Add language to credits request as well
+        api_key: TMDB_API_KEY,
+        language: tmdbLang, // Use normalized language
       },
     }
   );

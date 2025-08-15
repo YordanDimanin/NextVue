@@ -67,11 +67,6 @@ const OriginalLanguageFilter: React.FC = () => {
         setLanguages(langsSorted);
       } catch (error) {
         console.error("Error fetching languages:", error);
-        // fallback minimal list if API fails
-        setLanguages([
-          { iso_639_1: "en", english_name: "English", name: "English" },
-          { iso_639_1: "bg", english_name: "Bulgarian", name: "Bulgarian" },
-        ]);
       }
     };
     fetchLanguages();

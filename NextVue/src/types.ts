@@ -13,13 +13,12 @@ export interface Movie {
   // Add other properties as needed based on TMDB API response
 }
 
-export interface Params {
-  api_key: string;
-  with_genres: string;
-  sort_by: string;
-  "primary_release_date.lte"?: string;
-  language?: string;
-  page: number;
-  with_people?: string; // Optional, as it's only added if actorIds.length > 0
-  with_original_language?: string; // New optional property
+export interface FetchMoviesParams {
+  genre?: string;
+  filter?: string;
+  uiLanguage: string; // Selected UI language
+  actorIds?: number[];
+  page?: number;
+  movieLanguage?: string; // Original language filter, e.g., 'ar'
+  translatedOnly?: boolean; // Whether to filter only translated movies
 }

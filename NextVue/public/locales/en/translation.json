@@ -114,5 +114,10 @@
     "uk": "Ukrainian",
     "vi": "Vietnamese",
     "zh": "Chinese"
+  },
+  "translationFilter": {
+    "title": "Translation Availability",
+    "translatedOnly": "Translated Only",
+    "mixed": "Mix Translated & Original"
   }
 }
