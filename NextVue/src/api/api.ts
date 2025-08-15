@@ -6,14 +6,14 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 
 export async function searchActor(name: string) {
   const res = await axios.get(`${BASE_URL}/search/person?api_key=${API_KEY}&query=${encodeURIComponent(name)}`);
-  return res.data.results; // array of actors
+  return res.data.results;
 }
 
 interface DiscoverMoviesOptions {
   castId?: number;
   genreIds?: number[];
   originalLanguage?: string; // "all" = ignore
-  translatedOnly?: boolean; // This will be handled outside discoverMovies
+  translatedOnly?: boolean;
   sortBy?: string;
   page?: number;
   uiLanguage?: string;
@@ -23,6 +23,7 @@ export async function discoverMovies({
   castId,
   genreIds,
   originalLanguage,
+  translatedOnly = false,
   sortBy = 'popularity.desc',
   page = 1,
   uiLanguage = 'en-US',
@@ -42,11 +43,16 @@ export async function discoverMovies({
   }
 
   const res = await axios.get(`${BASE_URL}/discover/movie?${params.toString()}`);
-  const data = res.data;
+  let movies: Movie[] = res.data.results;
+
+  // Apply translated-only filter if needed
+  if (translatedOnly) {
+    movies = await filterTranslatedMovies(movies, uiLanguage);
+  }
 
   return {
-    results: data.results,
-    totalPages: data.total_pages,
+    results: movies,
+    totalPages: res.data.total_pages,
   };
 }
 
@@ -67,43 +73,44 @@ export async function fetchMovieTranslations(movieId: number) {
   return res.data.translations;
 }
 
+/**
+ * Filters movies that are either:
+ * 1) Already in the UI language
+ * 2) Have a translation in the UI language
+ */
 export async function filterTranslatedMovies(movies: Movie[], uiLanguage: string): Promise<Movie[]> {
   const translatedMovies: Movie[] = [];
-  for (const movie of movies) {
+
+  const moviePromises = movies.map(async (movie) => {
+    // Already in UI language -> keep it
+    if (movie.original_language === uiLanguage.split('-')[0]) {
+      return movie;
+    }
+
     try {
       const translations: Translation[] = await fetchMovieTranslations(movie.id);
-      const hasTranslation = translations.some((tr: Translation) => tr.iso_639_1 === uiLanguage);
-
-      if (hasTranslation || movie.original_language === uiLanguage) {
-        translatedMovies.push(movie);
-      }
+      const hasTranslation = translations.some(tr => tr.iso_639_1 === uiLanguage.split('-')[0]);
+      if (hasTranslation) return movie;
     } catch (error) {
       console.error(`Error fetching translations for movie ${movie.id}:`, error);
     }
-  }
-  return translatedMovies;
+    return null;
+  });
+
+  const results = await Promise.all(moviePromises);
+  return results.filter(Boolean) as Movie[];
 }
 
 export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {
   const tmdbLang = language.split('-')[0];
   const movieDetailsRes = await axios.get(
     `${BASE_URL}/movie/${movieId}`,
-    {
-      params: {
-        api_key: API_KEY,
-        language: tmdbLang,
-      },
-    }
+    { params: { api_key: API_KEY, language: tmdbLang } }
   );
 
   const movieCreditsRes = await axios.get(
     `${BASE_URL}/movie/${movieId}/credits`,
-    {
-      params: {
-        api_key: API_KEY,
-        language: tmdbLang,
-      },
-    }
+    { params: { api_key: API_KEY, language: tmdbLang } }
   );
 
   return {

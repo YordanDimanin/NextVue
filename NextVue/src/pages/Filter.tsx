@@ -12,7 +12,7 @@ import Button from "../components/Button";
 import Footer from "../components/Footer";
 import ActorSearch from "../components/ActorSearch";
 
-import { searchActor, discoverMovies, filterTranslatedMovies } from "../api/api";
+import { searchActor, discoverMovies } from "../api/api";
 import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
@@ -52,14 +52,11 @@ const Filter = () => {
         sortBy: filter,
         uiLanguage: currentLanguage,
         originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+        translatedOnly: translationMode === 'translated',
         page: 1,
       });
 
       let results = initialResults;
-
-      if (translationMode === 'translated') {
-        results = await filterTranslatedMovies(results, currentLanguage);
-      }
 
       dispatch(setMovies({ movies: results, totalPages: totalPages, page: 1, totalResults: results.length }));
       dispatch(setGenre(genre));
