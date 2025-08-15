@@ -41,11 +41,8 @@
     "noTranslatedMoviesFound": "Няма намерени преведени филми, отговарящи на вашите филтри. Моля, опитайте с други селекции."
   },
   "filterByOptions": {
-    "mostPopular": "Най-популярни",
-    "highestRated": "Най-високо оценени",
-    "newest": "Най-нови",
-    "oldest": "Най-стари",
-    "mostVoted": "Най-гласувани"
+    "mostPopular": "Сегашни Тенденции",
+    "mostVoted": "Хитове на Всички Времена"
   },
   "genreOptions": {
     "action": "Екшън",

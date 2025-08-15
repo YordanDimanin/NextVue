@@ -41,11 +41,8 @@
     "noTranslatedMoviesFound": "No translated movies found matching your filters. Please try different selections."
   },
   "filterByOptions": {
-    "mostPopular": "Most Popular",
-    "highestRated": "Highest Rated",
-    "newest": "Newest",
-    "oldest": "Oldest",
-    "mostVoted": "Most Voted"
+    "mostPopular": "Current Trends",
+    "mostVoted": "All-Time Hits"
   },
   "genreOptions": {
     "action": "Action",
