@@ -13,9 +13,9 @@ interface DiscoverMoviesOptions {
   castId?: number;
   genreIds?: number[];
   originalLanguage?: string; // "all" = ignore
-  translatedOnly?: boolean;
+  translatedOnly?: boolean; // This will be handled outside discoverMovies
   sortBy?: string;
-  page?: number; // Added page parameter
+  page?: number;
   uiLanguage?: string;
 }
 
@@ -23,22 +23,20 @@ export async function discoverMovies({
   castId,
   genreIds,
   originalLanguage,
-  translatedOnly,
   sortBy = 'popularity.desc',
-  page = 1, // Default page to 1
+  page = 1,
   uiLanguage = 'en-US',
 }: DiscoverMoviesOptions) {
   const params = new URLSearchParams({
     api_key: API_KEY,
     sort_by: sortBy,
-    page: page.toString(), // Ensure page is a string
-    'release_date.lte': new Date().toISOString().split('T')[0], // only released
+    page: page.toString(),
+    'release_date.lte': new Date().toISOString().split('T')[0],
     language: uiLanguage,
   });
 
   if (castId) params.append('with_cast', castId.toString());
   if (genreIds?.length) params.append('with_genres', genreIds.join(','));
-  // Only append original_language if it's not "all"
   if (originalLanguage && originalLanguage !== 'all') {
     params.append('with_original_language', originalLanguage);
   }
@@ -46,17 +44,44 @@ export async function discoverMovies({
   const res = await axios.get(`${BASE_URL}/discover/movie?${params.toString()}`);
   const data = res.data;
 
-  let results = data.results;
-
-  // Only include translated movies if required and originalLanguage is not "all"
-  if (translatedOnly && originalLanguage && originalLanguage !== 'all') {
-    results = results.filter((movie: Movie) => movie.original_language !== originalLanguage);
-  }
-
   return {
-    results,
+    results: data.results,
     totalPages: data.total_pages,
   };
+}
+
+interface Translation {
+  iso_639_1: string;
+  iso_3166_1: string;
+  name: string;
+  english_name: string;
+  data: {
+    title: string;
+    overview: string;
+    homepage: string;
+  };
+}
+
+export async function fetchMovieTranslations(movieId: number) {
+  const res = await axios.get(`${BASE_URL}/movie/${movieId}/translations?api_key=${API_KEY}`);
+  return res.data.translations;
+}
+
+export async function filterTranslatedMovies(movies: Movie[], uiLanguage: string): Promise<Movie[]> {
+  const translatedMovies: Movie[] = [];
+  for (const movie of movies) {
+    try {
+      const translations: Translation[] = await fetchMovieTranslations(movie.id);
+      const hasTranslation = translations.some((tr: Translation) => tr.iso_639_1 === uiLanguage);
+
+      if (hasTranslation || movie.original_language === uiLanguage) {
+        translatedMovies.push(movie);
+      }
+    } catch (error) {
+      console.error(`Error fetching translations for movie ${movie.id}:`, error);
+    }
+  }
+  return translatedMovies;
 }
 
 export const fetchMovieDetailsWithCast = async (movieId: number, language: string = "en-US") => {

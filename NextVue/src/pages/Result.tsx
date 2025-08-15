@@ -5,7 +5,7 @@ import Footer from "../components/Footer"
 
 import { useEffect, useState, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { searchActor, discoverMovies, fetchMovieDetailsWithCast } from "../api/api"
+import { searchActor, discoverMovies, fetchMovieDetailsWithCast, filterTranslatedMovies } from "../api/api"
 import { nextMovie, setMovies } from "../app/features/movieSlice";
 import type { RootState } from "../app/store";
 import type { Actor, Movie } from "../types";
@@ -36,15 +36,21 @@ const Result = () => {
         }
       }
 
-      const { results, totalPages: newTotalPages } = await discoverMovies({
+      const { results: initialResults, totalPages: newTotalPages } = await discoverMovies({
         castId: actorId,
         genreIds: genre ? [parseInt(genre)] : undefined,
         sortBy: filter,
         uiLanguage: currentLanguage,
         originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
-        translatedOnly: translationMode === 'translated',
-        page: 1, // Always fetch first page initially
+        page: 1,
       });
+
+      let results = initialResults;
+
+      if (translationMode === 'translated') {
+        results = await filterTranslatedMovies(results, currentLanguage);
+      }
+
       dispatch(setMovies({ movies: results, totalPages: newTotalPages, page: 1, totalResults: results.length }));
     } catch (error) {
       console.error("Failed to fetch movies:", error);
@@ -58,7 +64,7 @@ const Result = () => {
   }, [fetchMoviesInitial, currentLanguage]);
 
   const fetchNextPage = useCallback(async () => {
-    if (currentPage >= totalPages) return; // Prevent fetching if no more pages
+    if (currentPage >= totalPages) return;
 
     setIsLoading(true);
     try {
@@ -70,21 +76,26 @@ const Result = () => {
         }
       }
 
-      const { results: fetchedMovies, totalPages: newTotalPages } = await discoverMovies({
+      const { results: initialFetchedMovies, totalPages: newTotalPages } = await discoverMovies({
         castId: actorId,
         genreIds: genre ? [parseInt(genre)] : undefined,
         sortBy: filter,
         uiLanguage: currentLanguage,
         originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
-        translatedOnly: translationMode === 'translated',
-        page: currentPage + 1, // Fetch the next page
+        page: currentPage + 1,
       });
+
+      let fetchedMovies = initialFetchedMovies;
+
+      if (translationMode === 'translated') {
+        fetchedMovies = await filterTranslatedMovies(fetchedMovies, currentLanguage);
+      }
 
       dispatch(setMovies({
         movies: [...movies, ...fetchedMovies],
         totalPages: newTotalPages,
         page: currentPage + 1,
-        totalResults: totalResults + fetchedMovies.length // This might not be accurate if totalResults is from API
+        totalResults: totalResults + fetchedMovies.length
       }));
 
     } catch (error) {
@@ -97,7 +108,7 @@ const Result = () => {
   const handleRecommendClick = useCallback(() => {
     if (currentMovieIndex < movies.length - 1) {
       dispatch(nextMovie());
-    } else if (currentPage < totalPages && !isLoading) { // Check totalPages
+    } else if (currentPage < totalPages && !isLoading) {
       console.log("Fetching more movies...");
       fetchNextPage();
     } else {
@@ -134,7 +145,7 @@ const Result = () => {
   }, [currentMovieIndex, movies, selectedActors, currentLanguage]);
 
   const currentMovie = movies[currentMovieIndex];
-  const noMoreMovies = currentMovieIndex >= movies.length -1 && currentPage >= totalPages; // Updated logic
+  const noMoreMovies = currentMovieIndex >= movies.length -1 && currentPage >= totalPages;
 
   return (
     <div className="flex flex-col min-h-screen">
