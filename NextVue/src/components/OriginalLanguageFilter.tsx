@@ -19,9 +19,9 @@ const ExclamationIcon = ({ onClick }: { onClick: () => void }) => (
 
 const messages = {
   en:
-    "Filters movies by the language they were originally made in. Titles and descriptions will be shown in your selected app language. If a movie has been translated into your selected language, it will be shown in that language; otherwise, it will appear in its original language.",
+    "Some language names may appear in Bulgarian. These will be shown at the bottom of the list.",
   bg:
-    "Филтрира филмите по езика, на който са оригинално създадени. Заглавията и описанията ще бъдат показани на избрания от вас език на приложението. Ако филмът е преведен на избрания от вас език, ще се покаже на този език; ако не, ще се покаже на оригиналния му език.",
+    "Някои имена на езици може да се показват на английски. Те ще бъдат подредени най-отдолу в списъка.",
 };
 
 interface Language {

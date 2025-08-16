@@ -1,8 +1,8 @@
 {
   "home": {
     "welcome": "Welcome to ",
-    "appName": "NextVue",
-    "description": "NextVue is your personal movie companion — helping you discover great films based on your favorite genres.",
+    "appName": "NextVue 👋",
+    "description": "Find your next favorite movie and let NextVue surprise you every time!",
     "findMovie": "Find Movie",
     "languageLabel": "Language"
   },
