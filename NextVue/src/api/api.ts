@@ -79,7 +79,7 @@ export async function fetchMovieTranslations(movieId: number) {
  * 2) Have a translation in the UI language
  */
 export async function filterTranslatedMovies(movies: Movie[], uiLanguage: string): Promise<Movie[]> {
-  const translatedMovies: Movie[] = [];
+  
 
   const moviePromises = movies.map(async (movie) => {
     // Already in UI language -> keep it
@@ -118,3 +118,20 @@ export const fetchMovieDetailsWithCast = async (movieId: number, language: strin
     cast: movieCreditsRes.data.cast,
   };
 };
+export async function discoverMoviesByActors(actorIds: number[], options?: Omit<DiscoverMoviesOptions, 'castId'>) {
+  if (!actorIds.length) return { results: [], totalPages: 0 };
+
+  // 1. Fetch movies for each actor
+  const moviesPerActor = await Promise.all(
+    actorIds.map(id => discoverMovies({ ...options, castId: id }))
+  );
+
+  // 2. Intersect movies
+  let commonMovies = moviesPerActor[0].results;
+  for (let i = 1; i < moviesPerActor.length; i++) {
+    const currentSet = new Set(moviesPerActor[i].results.map(m => m.id));
+    commonMovies = commonMovies.filter(m => currentSet.has(m.id));
+  }
+
+  return { results: commonMovies, totalPages: 1 }; // totalPages simplified
+}

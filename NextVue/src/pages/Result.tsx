@@ -5,7 +5,7 @@ import Footer from "../components/Footer"
 
 import { useEffect, useState, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { searchActor, discoverMovies, fetchMovieDetailsWithCast, filterTranslatedMovies } from "../api/api"
+import { discoverMovies, fetchMovieDetailsWithCast, discoverMoviesByActors } from "../api/api"
 import { nextMovie, setMovies } from "../app/features/movieSlice";
 import type { RootState } from "../app/store";
 import type { Actor, Movie } from "../types";
@@ -28,30 +28,38 @@ const Result = () => {
   const fetchMoviesInitial = useCallback(async () => {
     setIsLoading(true);
     try {
-      let actorId: number | undefined;
-      if (selectedActors && selectedActors.length > 0) {
-        const actors = await searchActor(selectedActors[0].name);
-        if (actors.length > 0) {
-          actorId = actors[0].id;
-        }
+      let results: Movie[] = [];
+      let newTotalPages = 1;
+      let totalResults = 0;
+
+      if (selectedActors.length > 0) {
+        const selectedActorIds = selectedActors.map(a => a.id);
+        const { results: actorFilteredMovies, totalPages: actorTotalPages } = await discoverMoviesByActors(selectedActorIds, {
+          genreIds: genre ? [parseInt(genre)] : undefined,
+          sortBy: filter,
+          uiLanguage: currentLanguage,
+          originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+          translatedOnly: translationMode === 'translated',
+          page: 1,
+        });
+        results = actorFilteredMovies;
+        newTotalPages = actorTotalPages;
+        totalResults = results.length;
+      } else {
+        const data = await discoverMovies({
+          genreIds: genre ? [parseInt(genre)] : undefined,
+          sortBy: filter,
+          uiLanguage: currentLanguage,
+          originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+          translatedOnly: translationMode === 'translated',
+          page: 1,
+        });
+        results = data.results;
+        newTotalPages = data.totalPages;
+        totalResults = results.length;
       }
 
-      const { results: initialResults, totalPages: newTotalPages } = await discoverMovies({
-        castId: actorId,
-        genreIds: genre ? [parseInt(genre)] : undefined,
-        sortBy: filter,
-        uiLanguage: currentLanguage,
-        originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
-        page: 1,
-      });
-
-      let results = initialResults;
-
-      if (translationMode === 'translated') {
-        results = await filterTranslatedMovies(results, currentLanguage);
-      }
-
-      dispatch(setMovies({ movies: results, totalPages: newTotalPages, page: 1, totalResults: results.length }));
+      dispatch(setMovies({ movies: results, totalPages: newTotalPages, page: 1, totalResults: totalResults }));
     } catch (error) {
       console.error("Failed to fetch movies:", error);
     } finally {
@@ -68,27 +76,32 @@ const Result = () => {
 
     setIsLoading(true);
     try {
-      let actorId: number | undefined;
-      if (selectedActors && selectedActors.length > 0) {
-        const actors = await searchActor(selectedActors[0].name);
-        if (actors.length > 0) {
-          actorId = actors[0].id;
-        }
-      }
+      let fetchedMovies: Movie[] = [];
+      let newTotalPages = totalPages;
 
-      const { results: initialFetchedMovies, totalPages: newTotalPages } = await discoverMovies({
-        castId: actorId,
-        genreIds: genre ? [parseInt(genre)] : undefined,
-        sortBy: filter,
-        uiLanguage: currentLanguage,
-        originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
-        page: currentPage + 1,
-      });
-
-      let fetchedMovies = initialFetchedMovies;
-
-      if (translationMode === 'translated') {
-        fetchedMovies = await filterTranslatedMovies(fetchedMovies, currentLanguage);
+      if (selectedActors.length > 0) {
+        const selectedActorIds = selectedActors.map(a => a.id);
+        const { results: actorFilteredMovies, totalPages: actorTotalPages } = await discoverMoviesByActors(selectedActorIds, {
+          genreIds: genre ? [parseInt(genre)] : undefined,
+          sortBy: filter,
+          uiLanguage: currentLanguage,
+          originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+          translatedOnly: translationMode === 'translated',
+          page: currentPage + 1,
+        });
+        fetchedMovies = actorFilteredMovies;
+        newTotalPages = actorTotalPages;
+      } else {
+        const data = await discoverMovies({
+          genreIds: genre ? [parseInt(genre)] : undefined,
+          sortBy: filter,
+          uiLanguage: currentLanguage,
+          originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+          translatedOnly: translationMode === 'translated',
+          page: currentPage + 1,
+        });
+        fetchedMovies = data.results;
+        newTotalPages = data.totalPages;
       }
 
       dispatch(setMovies({

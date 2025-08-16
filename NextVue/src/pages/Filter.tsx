@@ -12,7 +12,7 @@ import Button from "../components/Button";
 import Footer from "../components/Footer";
 import ActorSearch from "../components/ActorSearch";
 
-import { searchActor, discoverMovies } from "../api/api";
+import { discoverMovies, discoverMoviesByActors } from "../api/api";
 import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
@@ -38,27 +38,39 @@ const Filter = () => {
   const fetchMoviesData = useCallback(async () => {
     setIsLoading(true);
     try {
-      let actorId: number | undefined;
-      if (selectedActors && selectedActors.length > 0) {
-        const actors = await searchActor(selectedActors[0].name);
-        if (actors.length > 0) {
-          actorId = actors[0].id;
-        }
+      const selectedActorIds = selectedActors.map(a => a.id);
+      let results: Movie[] = [];
+      let totalPages = 1;
+      let totalResults = 0;
+
+      if (selectedActorIds.length > 0) {
+        const { results: actorFilteredMovies, totalPages: actorTotalPages } = await discoverMoviesByActors(selectedActorIds, {
+          genreIds: genre ? [parseInt(genre)] : undefined,
+          sortBy: filter,
+          uiLanguage: currentLanguage,
+          originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+          translatedOnly: translationMode === 'translated',
+          page: 1, // discoverMoviesByActors handles pagination internally if needed, but for now it's page 1
+        });
+        results = actorFilteredMovies;
+        totalPages = actorTotalPages; // This will be 1 from discoverMoviesByActors
+        totalResults = results.length;
+      } else {
+        // No actors selected — fetch normally
+        const data = await discoverMovies({
+          genreIds: genre ? [parseInt(genre)] : undefined,
+          sortBy: filter,
+          uiLanguage: currentLanguage,
+          originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
+          translatedOnly: translationMode === 'translated',
+          page: 1,
+        });
+        results = data.results;
+        totalPages = data.totalPages;
+        totalResults = results.length;
       }
 
-      const { results: initialResults, totalPages } = await discoverMovies({
-        castId: actorId,
-        genreIds: genre ? [parseInt(genre)] : undefined,
-        sortBy: filter,
-        uiLanguage: currentLanguage,
-        originalLanguage: movieLanguage === 'all' ? undefined : movieLanguage,
-        translatedOnly: translationMode === 'translated',
-        page: 1,
-      });
-
-      let results = initialResults;
-
-      dispatch(setMovies({ movies: results, totalPages: totalPages, page: 1, totalResults: results.length }));
+      dispatch(setMovies({ movies: results, totalPages: totalPages, page: 1, totalResults: totalResults }));
       dispatch(setGenre(genre));
       dispatch(setFilter(filter));
     } catch (error) {
@@ -66,7 +78,7 @@ const Filter = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch, selectedActors, genre, filter, currentLanguage, movieLanguage, translationMode]);
+  }, [selectedActors, genre, filter, currentLanguage, movieLanguage, translationMode, dispatch]);
 
   const handleClick = async () => {
     await fetchMoviesData();
