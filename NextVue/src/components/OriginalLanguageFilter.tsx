@@ -60,9 +60,15 @@ const OriginalLanguageFilter: React.FC = () => {
           { params: { api_key: import.meta.env.VITE_TMDB_API_KEY } }
         );
         const langsSorted = response.data.sort((a: Language, b: Language) => {
+          // Keep "all" and "en" at the top
+          if (a.iso_639_1 === "all") return -1;
+          if (b.iso_639_1 === "all") return 1;
+          if (a.iso_639_1 === "en") return -1;
+          if (b.iso_639_1 === "en") return 1;
+
           const nameA = t(`originalLanguages.${a.iso_639_1}`, { defaultValue: a.english_name || a.name });
           const nameB = t(`originalLanguages.${b.iso_639_1}`, { defaultValue: b.english_name || b.name });
-          return nameA.localeCompare(nameB);
+          return nameA.localeCompare(nameB, i18n.language);
         });
         setLanguages(langsSorted);
       } catch (error) {

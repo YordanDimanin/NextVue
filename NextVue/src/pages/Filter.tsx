@@ -17,6 +17,7 @@ import { setMovies } from "../app/features/movieSlice";
 import { setGenre } from "../app/features/genreSlice";
 import { setFilter } from "../app/features/filterSlice";
 import type { RootState } from "../app/store";
+import type { Movie } from '../types';
 
 const DEFAULT_GENRE = "28";
 const DEFAULT_FILTER = "popularity.desc";
